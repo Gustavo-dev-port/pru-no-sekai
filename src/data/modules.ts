@@ -4,7 +4,7 @@
 
 export type ModuleId = 'santuario' | 'oraculo' | 'alimentar' | 'correio'
 
-export type ModuleStatus = 'prototipo' | 'em-construcao'
+export type ModuleStatus = 'prototipo' | 'pronto' | 'em-construcao'
 
 export interface ModuleFeature {
   label: string
@@ -51,14 +51,14 @@ export const MODULES: ModuleInfo[] = [
     shortName: 'Oráculo',
     jp: 'おみくじ',
     tagline: 'Tire um omikuji e descubra o que os pombos preveem.',
-    status: 'em-construcao',
+    status: 'pronto',
     wipLine: 'Os pombos videntes ainda estão alongando o pescoço. Volte em breve!',
     features: [
-      { label: 'Sorteio de mensagens aleatórias', done: false },
-      { label: 'Apresentação no estilo omikuji', done: false },
-      { label: 'Animação durante a revelação', done: false },
-      { label: 'Mensagens românticas, bobas e imprevisíveis', done: false },
-      { label: 'Sem repetir a previsão anterior', done: false },
+      { label: 'Sorteio de mensagens aleatórias', done: true },
+      { label: 'Apresentação no estilo omikuji', done: true },
+      { label: 'Animação durante a revelação', done: true },
+      { label: 'Mensagens românticas, bobas e imprevisíveis (Coleção 01, 30 previsões)', done: true },
+      { label: 'Sem repetir a previsão anterior', done: true },
     ],
   },
   {

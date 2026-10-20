@@ -83,8 +83,21 @@ describe('Navegação entre os quatro módulos', () => {
     expect(links.map((a) => a.getAttribute('href'))).toEqual(['#/oraculo', '#/alimentar', '#/correio'])
   })
 
+  it('#/oraculo abre o Oráculo pronto (sem selo de construção) e marca a aba atual', async () => {
+    render(<App />)
+    goTo('#/oraculo')
+
+    const title = await screen.findByRole('heading', { level: 1, name: 'Oráculo dos Pombos' })
+    expect(title).toHaveFocus()
+    expect(document.title).toBe('Oráculo dos Pombos · Pru no Sekai')
+    expect(screen.queryByText('Em construção')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /tirar um omikuji/i })).toBeInTheDocument()
+
+    const bottomNav = screen.getByRole('navigation', { name: /módulos do pru no sekai/i })
+    expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', '#/oraculo')
+  })
+
   it.each([
-    ['#/oraculo', 'Oráculo dos Pombos'],
     ['#/alimentar', 'Alimente o Pombo'],
     ['#/correio', 'Correio Pombo do Amor'],
   ])('%s abre "%s", marca a aba atual e mostra que está em construção', async (hash, name) => {

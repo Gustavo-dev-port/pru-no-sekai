@@ -1,0 +1,272 @@
+[
+  {
+    "id": "01",
+    "type": "大吉 · Grande sorte",
+    "category": "Romance",
+    "icon": "heart",
+    "title": "O destino das duas asas",
+    "body": "Duas asas não precisam voar na mesma direção o tempo todo. Basta que saibam onde se encontrar. Seu amor está no caminho certo.",
+    "extra": "Um pombo solteiro ficou emocionado."
+  },
+  {
+    "id": "02",
+    "type": "大吉 · Grande sorte",
+    "category": "Romance",
+    "icon": "heart",
+    "title": "O beijo profetizado",
+    "body": "Os astros revelam que alguém muito bonito deseja te beijar. Curiosamente, essa pessoa também está escrevendo este site.",
+    "extra": "O oráculo não revela nomes. Mas começa com G."
+  },
+  {
+    "id": "03",
+    "type": "中吉 · Sorte média",
+    "category": "Romance",
+    "icon": "heart",
+    "title": "A migalha do coração",
+    "body": "Grandes amores são feitos de pequenos gestos. Um carinho, um abraço e alguém dividindo a última batatinha.",
+    "extra": "Dividir comida é um juramento sagrado."
+  },
+  {
+    "id": "04",
+    "type": "吉 · Boa sorte",
+    "category": "Romance",
+    "icon": "heart",
+    "title": "As penas do destino",
+    "body": "Uma pequena surpresa está se aproximando. Talvez um presente, talvez um beijo, talvez um pombo entrando pela janela.",
+    "extra": "Feche a janela por precaução."
+  },
+  {
+    "id": "05",
+    "type": "大吉 · Grande sorte",
+    "category": "Romance",
+    "icon": "heart",
+    "title": "O ninho perfeito",
+    "body": "Seu futuro guarda um cantinho aconchegante, plantas felizes e alguém que vai continuar te amando mesmo quando você roubar o cobertor.",
+    "extra": "O Conselho dos Pombos aprovou a união."
+  },
+  {
+    "id": "06",
+    "type": "吉 · Boa sorte",
+    "category": "Cotidiano",
+    "icon": "sun",
+    "title": "O café da manhã imperial",
+    "body": "Hoje você merece comer alguma coisa gostosa sem precisar dividir. Exceto se for comigo. Aí o destino recomenda compartilhar.",
+    "extra": "Previsão patrocinada por um pombo faminto."
+  },
+  {
+    "id": "07",
+    "type": "中吉 · Sorte média",
+    "category": "Cotidiano",
+    "icon": "sun",
+    "title": "A missão da coberta",
+    "body": "A sabedoria ancestral recomenda ficar mais cinco minutinhos na cama. Atenção: esses cinco minutos podem virar quarenta.",
+    "extra": "O pombo consultor já voltou a dormir."
+  },
+  {
+    "id": "08",
+    "type": "吉 · Boa sorte",
+    "category": "Cotidiano",
+    "icon": "sun",
+    "title": "O encontro inesperado",
+    "body": "Você encontrará algo que perdeu. Pode ser um objeto, uma ideia ou a vontade de terminar aquela tarefa.",
+    "extra": "O oráculo não garante o prazo."
+  },
+  {
+    "id": "09",
+    "type": "小吉 · Pequena sorte",
+    "category": "Cotidiano",
+    "icon": "sun",
+    "title": "A jornada do chinelo",
+    "body": "Algo está fora do lugar. Antes de procurar por toda a casa, confira se não está literalmente na sua mão.",
+    "extra": "Três pombos concordaram com a investigação."
+  },
+  {
+    "id": "10",
+    "type": "大吉 · Grande sorte",
+    "category": "Cotidiano",
+    "icon": "sun",
+    "title": "O dia da Pru",
+    "body": "Os espíritos decretaram que hoje é um excelente dia para ser você. Coincidentemente, ontem também foi. E amanhã provavelmente será.",
+    "extra": "Profecia de altíssima precisão."
+  },
+  {
+    "id": "11",
+    "type": "大吉 · Grande sorte",
+    "category": "Pombos",
+    "icon": "bird",
+    "title": "A coroação",
+    "body": "Pru, os pombos se reuniram e chegaram a uma decisão unânime: você é a legítima Imperatriz Suprema das Migalhas.",
+    "extra": "O imposto real será cobrado em milho."
+  },
+  {
+    "id": "12",
+    "type": "吉 · Boa sorte",
+    "category": "Pombos",
+    "icon": "bird",
+    "title": "O pombo observador",
+    "body": "Um pombo olhou para você por três segundos. Isso significa respeito, admiração ou absoluta ausência de pensamentos.",
+    "extra": "Provavelmente a terceira opção."
+  },
+  {
+    "id": "13",
+    "type": "中吉 · Sorte média",
+    "category": "Pombos",
+    "icon": "bird",
+    "title": "O pombo mensageiro",
+    "body": "Uma notícia feliz está a caminho. O pombo responsável pela entrega, porém, parou para comer e esqueceu onde mora.",
+    "extra": "Prazo de entrega: eventualmente."
+  },
+  {
+    "id": "14",
+    "type": "小吉 · Pequena sorte",
+    "category": "Pombos",
+    "icon": "bird",
+    "title": "O grande plano",
+    "body": "Você foi escolhida para uma missão secreta. Os detalhes ainda são confidenciais porque o pombo encarregado esqueceu o plano.",
+    "extra": "Arrulhos suspeitos foram ouvidos."
+  },
+  {
+    "id": "15",
+    "type": "大吉 · Grande sorte",
+    "category": "Pombos",
+    "icon": "bird",
+    "title": "A bênção do milho",
+    "body": "Toda felicidade começa com um pequeno grão. A sua, porém, começou quando você conquistou o coração de um humano meio bobo.",
+    "extra": "O humano confirma a informação."
+  },
+  {
+    "id": "16",
+    "type": "吉 · Boa sorte",
+    "category": "Japão",
+    "icon": "flower",
+    "title": "A pétala errante",
+    "body": "Uma flor de cerejeira caiu sobre seu caminho. O universo recomenda apreciar as pequenas coisas, principalmente as que têm penas.",
+    "extra": "Sakura aprovada pelo Ministério dos Pombos."
+  },
+  {
+    "id": "17",
+    "type": "大吉 · Grande sorte",
+    "category": "Japão",
+    "icon": "flower",
+    "title": "O festival das lanternas",
+    "body": "Mil lanternas iluminam seu destino. Uma delas carrega um pedido especial: que a Pru tenha muitos dias felizes.",
+    "extra": "Um pombo tentou apagar uma lanterna soprando."
+  },
+  {
+    "id": "18",
+    "type": "中吉 · Sorte média",
+    "category": "Japão",
+    "icon": "flower",
+    "title": "O espírito do jardim",
+    "body": "Um pequeno espírito protege suas plantas. Infelizmente, ele não sabe regar, mas oferece apoio emocional.",
+    "extra": "Ele cobra uma folha por consulta."
+  },
+  {
+    "id": "19",
+    "type": "吉 · Boa sorte",
+    "category": "Japão",
+    "icon": "flower",
+    "title": "O tanuki desconfiado",
+    "body": "Um tanuki cruzou seu caminho e deixou um aviso: nem toda decisão precisa ser tomada hoje. Algumas podem esperar um chá.",
+    "extra": "O tanuki também está procrastinando."
+  },
+  {
+    "id": "20",
+    "type": "小吉 · Pequena sorte",
+    "category": "Japão",
+    "icon": "flower",
+    "title": "O chá dos sábios",
+    "body": "Sua mente encontrará tranquilidade após um momento de descanso. Se um pombo aparecer durante o chá, não entregue a xícara.",
+    "extra": "Incidentes anteriores justificam o aviso."
+  },
+  {
+    "id": "21",
+    "type": "大吉 · Grande sorte",
+    "category": "Criatividade",
+    "icon": "palette",
+    "title": "A musa emplumada",
+    "body": "Uma ideia maravilhosa está prestes a nascer. Ela pode virar um desenho, uma animação ou mais um projeto que você vai querer começar.",
+    "extra": "O pombo recomenda salvar o arquivo."
+  },
+  {
+    "id": "22",
+    "type": "吉 · Boa sorte",
+    "category": "Criatividade",
+    "icon": "palette",
+    "title": "O desenho impossível",
+    "body": "A inspiração aparecerá quando você menos esperar. Provavelmente quando estiver quase dormindo e longe do computador.",
+    "extra": "Deixe um bloquinho por perto."
+  },
+  {
+    "id": "23",
+    "type": "中吉 · Sorte média",
+    "category": "Criatividade",
+    "icon": "palette",
+    "title": "A obra-prima",
+    "body": "Seu próximo desenho será admirado por muitos. Um deles será um pombo sem nenhum conhecimento de arte, mas muito entusiasmo.",
+    "extra": "Crítica especializada: pruu pruu."
+  },
+  {
+    "id": "24",
+    "type": "小吉 · Pequena sorte",
+    "category": "Criatividade",
+    "icon": "palette",
+    "title": "O arquivo final",
+    "body": "O universo recomenda cautela com arquivos chamados final, final2 e final_agora_vai. Salve uma cópia antes de continuar.",
+    "extra": "O oráculo conhece o sofrimento dos artistas."
+  },
+  {
+    "id": "25",
+    "type": "大吉 · Grande sorte",
+    "category": "Criatividade",
+    "icon": "palette",
+    "title": "A artista imperial",
+    "body": "Seu talento foi reconhecido pela Academia Real dos Pombos. O prêmio é uma medalha imaginária e admiração absolutamente verdadeira.",
+    "extra": "O júri fez uma ovação de asas."
+  },
+  {
+    "id": "26",
+    "type": "末吉 · Sorte futura",
+    "category": "Caos",
+    "icon": "sparkles",
+    "title": "O conselho emergencial",
+    "body": "Sete pombos se reuniram para decidir seu futuro. Após quatro horas de debate, decidiram que você deveria comer alguma coisa.",
+    "extra": "A reunião foi considerada produtiva."
+  },
+  {
+    "id": "27",
+    "type": "凶 · Má sorte",
+    "category": "Caos",
+    "icon": "sparkles",
+    "title": "O pombo da desgraça",
+    "body": "Uma pequena inconveniência poderá surgir hoje. Nada grave: talvez uma meia desapareça ou seu cabelo não colabore.",
+    "extra": "A maldição se desfaz com um abraço."
+  },
+  {
+    "id": "28",
+    "type": "小吉 · Pequena sorte",
+    "category": "Caos",
+    "icon": "sparkles",
+    "title": "A profecia duvidosa",
+    "body": "O grande Oráculo prevê que algo acontecerá em algum momento. A natureza exata do acontecimento permanece misteriosa.",
+    "extra": "Precisão estatística: impressionante."
+  },
+  {
+    "id": "29",
+    "type": "末吉 · Sorte futura",
+    "category": "Caos",
+    "icon": "sparkles",
+    "title": "O eclipse do milho",
+    "body": "Os astros estão desalinhados. Um pombo roubou o mapa celestial achando que era um cardápio.",
+    "extra": "O Departamento Astral pede desculpas."
+  },
+  {
+    "id": "30",
+    "type": "凶 · Má sorte",
+    "category": "Caos",
+    "icon": "sparkles",
+    "title": "A revolta das migalhas",
+    "body": "Você foi acusada de não alimentar adequadamente o Conselho dos Pombos. A pena é receber cinco elogios e um beijo.",
+    "extra": "Não cabe recurso. A sentença é imediata."
+  }
+]
