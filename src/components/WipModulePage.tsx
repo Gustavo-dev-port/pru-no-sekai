@@ -31,9 +31,9 @@ export function WipModulePage({ id, hat }: WipModulePageProps) {
           <p className="wip-page__tagline">{mod.tagline}</p>
         </header>
 
-        <section className="wip-card" aria-labelledby={`${id}-status`}>
+        <section className="wip-card px-box" aria-labelledby={`${id}-status`}>
           <div className="wip-card__pigeon">
-            <Pigeon hat={hat} />
+            <Pigeon hat={hat} scale={4} />
           </div>
           <span id={`${id}-status`} className="badge badge--wip">
             Em construção
@@ -55,7 +55,7 @@ export function WipModulePage({ id, hat }: WipModulePageProps) {
         </section>
 
         <a className="btn" href={hrefFor('santuario')}>
-          ⛩ Voltar ao santuário
+          ◀ Voltar ao santuário
         </a>
       </main>
       <BottomNav current={id} />

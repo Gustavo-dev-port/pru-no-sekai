@@ -15,7 +15,7 @@ body {
   min-height: 100dvh;
   font-family: var(--font-body);
   font-size: var(--text-md);
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--ink);
   background: var(--cream-50);
   -webkit-font-smoothing: antialiased;
@@ -25,9 +25,9 @@ body {
 h1,
 h2,
 h3 {
-  font-family: var(--font-display);
-  font-weight: 900;
-  line-height: 1.15;
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  line-height: 1.25;
   margin: 0;
 }
 
@@ -48,10 +48,17 @@ svg {
   display: block;
 }
 
+/* Todo sprite e todo canvas: ampliados sem suavização */
+.pixel-sprite,
+canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Foco: contorno em degrau de 4px, sempre por fora do elemento */
 :focus-visible {
-  outline: 3px solid var(--sakura-700);
-  outline-offset: 3px;
-  border-radius: 6px;
+  outline: var(--px) dashed var(--sakura-700);
+  outline-offset: var(--px);
 }
 
 [tabindex="-1"]:focus {
@@ -68,8 +75,29 @@ svg {
 }
 
 .jp {
-  font-family: var(--font-display);
-  letter-spacing: 0.12em;
+  font-family: var(--font-pixel);
+  letter-spacing: 0.1em;
+}
+
+/* ---------- Moldura pixel ----------
+   Borda de 1 pixel do jogo com os cantos "comidos" (cantos em degrau),
+   brilho em cima, sombra embaixo e uma sombra dura deslocada.
+   Feita só com box-shadow: não corta conteúdo nem o anel de foco.
+   Variáveis por elemento: --fill, --frame, --shade, --b (espessura). */
+.px-box,
+.btn {
+  --b: var(--px);
+  background: var(--fill, var(--cream-50));
+  box-shadow:
+    inset 0 calc(var(--b) * -1) 0 0 var(--bevel-dark, rgba(74, 59, 66, 0.1)),
+    inset 0 var(--b) 0 0 var(--bevel-light, rgba(255, 255, 255, 0.6)),
+    calc(var(--b) * -1) 0 0 0 var(--frame, var(--px-ink)),
+    var(--b) 0 0 0 var(--frame, var(--px-ink)),
+    0 calc(var(--b) * -1) 0 0 var(--frame, var(--px-ink)),
+    0 var(--b) 0 0 var(--frame, var(--px-ink)),
+    0 calc(var(--b) * 2) 0 0 var(--shade, rgba(74, 59, 66, 0.22));
+  border: 0;
+  border-radius: 0;
 }
 
 /* ---------- Botões ---------- */
@@ -80,57 +108,69 @@ svg {
   gap: var(--space-2);
   min-height: 52px;
   padding: var(--space-3) var(--space-5);
-  border: var(--border-chunky);
-  border-radius: var(--radius-pill);
-  font-family: var(--font-display);
-  font-weight: 900;
+  font-family: var(--font-pixel);
   font-size: var(--text-md);
+  letter-spacing: 0.04em;
   text-decoration: none;
   cursor: pointer;
-  background: var(--cream-50);
   color: var(--ink);
-  box-shadow: var(--shadow-pop);
-  transition:
-    transform var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+/* apertar: afunda 1 pixel e perde a sombra, em um quadro */
+.btn:active {
+  transform: translateY(var(--px));
+  --shade: transparent;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  --fill: var(--cream-100);
 }
 
-.btn:active {
-  transform: translateY(3px);
-  box-shadow: var(--shadow-pressed);
+.btn--primary {
+  --fill: var(--sakura-700);
+  --frame: var(--sakura-900);
+  --bevel-light: rgba(255, 255, 255, 0.28);
+  --bevel-dark: rgba(0, 0, 0, 0.18);
+  color: var(--on-accent);
+}
+
+.btn--primary:hover {
+  --fill: #c04a72;
+}
+
+.btn--ghost {
+  --fill: transparent;
+  --bevel-light: transparent;
+  --bevel-dark: transparent;
+  --shade: transparent;
+  min-height: 44px;
+  font-size: var(--text-sm);
+}
+
+.btn--ghost:hover {
+  --fill: var(--cream-100);
 }
 
 .btn:disabled,
 .btn[aria-disabled="true"] {
   cursor: default;
-  opacity: 0.7;
-}
-
-.btn--primary {
-  background: var(--sakura-700);
-  color: var(--on-accent);
-}
-
-.btn--ghost {
-  background: transparent;
-  box-shadow: none;
-  border-style: dashed;
-  min-height: 44px;
-  font-size: var(--text-sm);
+  opacity: 0.75;
 }
 
 /* ---------- Selos ---------- */
 .badge {
+  --b: 2px;
   display: inline-block;
-  padding: 2px var(--space-3);
-  border-radius: var(--radius-pill);
+  padding: 2px var(--space-2);
+  font-family: var(--font-pixel);
   font-size: var(--text-xs);
-  font-weight: 700;
-  border: 2px solid currentColor;
+  line-height: 1.5;
+  box-shadow:
+    -2px 0 0 0 currentColor,
+    2px 0 0 0 currentColor,
+    0 -2px 0 0 currentColor,
+    0 2px 0 0 currentColor;
+  margin: 2px;
 }
 
 .badge--wip {
@@ -144,55 +184,25 @@ svg {
 }
 
 .eyebrow {
+  font-family: var(--font-pixel);
   font-size: var(--text-xs);
-  font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--sakura-700);
 }
 
-/* ---------- Animações compartilhadas ---------- */
-@keyframes pop-in {
-  from {
+/* ---------- Animações compartilhadas (todas em quadros) ---------- */
+@keyframes px-pop-in {
+  0% {
     opacity: 0;
-    transform: translateY(16px) scale(0.92);
+    transform: translateY(calc(var(--px) * 3));
   }
-  to {
+  50% {
+    opacity: 1;
+    transform: translateY(calc(var(--px) * -1));
+  }
+  100% {
     opacity: 1;
     transform: none;
-  }
-}
-
-@keyframes wobble {
-  0%,
-  100% {
-    transform: rotate(0);
-  }
-  25% {
-    transform: rotate(-8deg) scale(1.06);
-  }
-  60% {
-    transform: rotate(6deg);
-  }
-}
-
-@keyframes head-bob {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(-3px) translateY(1px);
-  }
-}
-
-@keyframes sway {
-  0%,
-  100% {
-    transform: rotate(-3deg);
-  }
-  50% {
-    transform: rotate(3deg);
   }
 }
 

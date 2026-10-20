@@ -1,10 +1,12 @@
 .oracle-page {
   min-height: 100dvh;
-  background:
-    radial-gradient(circle at 80% 0%, var(--sakura-100) 0, transparent 45%),
-    radial-gradient(circle at 0% 100%, var(--sage-100) 0, transparent 50%),
-    var(--cream-50);
-  padding-bottom: 104px; /* barra inferior */
+  background: linear-gradient(
+    to bottom,
+    var(--sakura-100) 0 64px,
+    #ffecee 64px 128px,
+    var(--cream-50) 128px
+  );
+  padding-bottom: 112px; /* barra inferior */
 }
 
 .oracle {
@@ -31,141 +33,137 @@
   color: var(--ink-soft);
 }
 
-/* ---------- Altar: caixa + pombo vidente ---------- */
+/* ---------- Altar: caixa + pombo vidente sobre uma prateleira de madeira ---------- */
 .oracle__altar {
   display: grid;
   grid-template-columns: auto auto;
   align-items: end;
   justify-content: center;
-  column-gap: var(--space-3);
-  row-gap: var(--space-4);
+  column-gap: var(--space-4);
+  row-gap: var(--space-5);
+  padding: 0 var(--space-5);
+  /* prateleira: faixa de madeira de 3 pixels sob os sprites */
+  background:
+    linear-gradient(var(--px-wood-dark), var(--px-wood-dark)) bottom 0 left 0 / 100% var(--px) no-repeat,
+    linear-gradient(var(--px-wood), var(--px-wood)) bottom var(--px) left 0 / 100% calc(var(--px) * 2) no-repeat;
 }
 
-.omikuji-box {
-  width: 104px;
-  transform-origin: 50% 90%;
-  transition: width var(--dur-med) var(--ease-out);
-}
-
-.oracle__pigeon {
-  width: 110px;
-  transition: width var(--dur-med) var(--ease-out);
-}
-
-.oracle__altar--compact .omikuji-box {
-  width: 76px;
-}
-
-.oracle__altar--compact .oracle__pigeon {
-  width: 84px;
+.oracle__altar > .omikuji-box,
+.oracle__altar > .oracle__pigeon {
+  margin-bottom: calc(var(--px) * 2);
+  line-height: 0;
 }
 
 .oracle__line {
   grid-column: 1 / -1;
+  grid-row: 1;
   max-width: 340px;
+  justify-self: center;
   padding: var(--space-3) var(--space-4);
-  background: var(--cream-50);
-  border: var(--border-chunky);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-pop);
   font-size: var(--text-sm);
   font-weight: 700;
   text-align: center;
 }
 
+/* palitinho: escondido 7 pixels abaixo (atrás da caixa) */
 .omikuji-box__stick {
-  opacity: 0;
-  transform: translateY(26px);
+  transform: translateY(7px);
 }
 
+/* depois do sorteio, o palitinho fica para fora até a próxima consulta */
+.omikuji-box--drawn .omikuji-box__stick {
+  transform: translateY(0);
+}
+
+/* sacode: trancos de 1 pixel para os lados, em quadros */
 .omikuji-box--shaking {
-  animation: omikuji-shake 1000ms ease-in-out;
+  animation: omikuji-shake 1000ms steps(1);
 }
 
 .omikuji-box--shaking .omikuji-box__stick {
-  animation: stick-out 1000ms var(--ease-bounce) forwards;
+  animation: stick-out 1000ms steps(1) forwards;
 }
 
 @keyframes omikuji-shake {
   0%,
   100% {
-    transform: rotate(0);
+    transform: none;
   }
-  10%,
-  30%,
-  50% {
-    transform: rotate(-14deg);
-  }
-  20%,
+  8%,
+  24%,
   40%,
-  60% {
-    transform: rotate(14deg);
+  56% {
+    transform: translate(calc(var(--px) * -1), calc(var(--px) * -1));
   }
-  75% {
-    transform: rotate(180deg) translateY(4px);
+  16%,
+  32%,
+  48%,
+  64% {
+    transform: translate(var(--px), 0);
   }
-  90% {
-    transform: rotate(180deg);
+  72%,
+  92% {
+    transform: translateY(calc(var(--px) * -2));
   }
 }
 
+/* sobe em degraus pelo furo: unidades do SVG (1 = 1 pixel do sprite) */
 @keyframes stick-out {
   0%,
-  65% {
-    opacity: 0;
-    transform: translateY(26px);
+  64% {
+    transform: translateY(7px);
   }
-  85%,
+  72% {
+    transform: translateY(5px);
+  }
+  80% {
+    transform: translateY(2px);
+  }
+  88%,
   100% {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 
 .oracle__draw {
-  min-width: 260px;
+  min-width: 264px;
 }
 
-/* ---------- Papelzinho da previsão ---------- */
+/* ---------- Papelzinho da previsão: papel com moldura pixel ---------- */
 .fortune {
   --accent: var(--sakura-700);
   --band: var(--sakura-100);
+  --fill: var(--cream-50);
   position: relative;
   width: 100%;
   display: grid;
   gap: var(--space-3);
-  padding: var(--space-5) var(--space-5) var(--space-4);
-  background:
-    repeating-linear-gradient(0deg, transparent 0 27px, rgba(74, 59, 66, 0.05) 27px 28px),
-    var(--cream-50);
-  border: var(--border-chunky);
-  border-top: 14px solid var(--band);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-pop);
+  padding: calc(var(--space-5) + var(--px) * 3) var(--space-5) var(--space-4);
+  /* pauta de papel: linhas de 1 pixel */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 28px,
+    rgba(234, 211, 168, 0.55) 28px 32px
+  );
   transform-origin: 50% 0;
-  animation: slip-unroll 650ms var(--ease-out);
+  animation: slip-unroll 600ms steps(6);
 }
 
-/* dobra de papel no topo */
+/* faixa colorida no topo do papel (cor do nível de sorte) */
 .fortune::before {
   content: "";
   position: absolute;
-  top: -14px;
-  left: 50%;
-  width: 46px;
-  height: 14px;
-  transform: translateX(-50%);
-  background: var(--accent);
-  opacity: 0.85;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--px) * 3);
+  background: var(--band);
+  box-shadow: 0 var(--px) 0 0 var(--accent);
 }
 
 @keyframes slip-unroll {
   from {
-    opacity: 0;
-    transform: scaleY(0.08);
-  }
-  60% {
-    opacity: 1;
+    transform: scaleY(0.1);
   }
   to {
     transform: scaleY(1);
@@ -177,45 +175,59 @@
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
   column-gap: var(--space-4);
+  row-gap: var(--space-1);
   align-items: center;
 }
 
+/* carimbo quadrado (hanko) com o kanji em fonte pixel */
 .fortune__stamp {
   grid-row: 1 / span 2;
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
-  border: 4px double var(--accent);
-  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  margin: var(--px);
   color: var(--accent);
-  font-family: var(--font-display);
+  background: var(--cream-50);
+  box-shadow:
+    calc(var(--px) * -1) 0 0 0 var(--accent),
+    var(--px) 0 0 0 var(--accent),
+    0 calc(var(--px) * -1) 0 0 var(--accent),
+    0 var(--px) 0 0 var(--accent),
+    inset 0 0 0 2px var(--cream-50),
+    inset 0 0 0 4px var(--accent);
+  font-family: var(--font-pixel);
   font-size: 1.75rem;
-  font-weight: 900;
   line-height: 1;
-  transform: rotate(-8deg);
-  animation: stamp-in 500ms var(--ease-bounce) 350ms both;
+  animation: stamp-in 360ms steps(3) 360ms both;
 }
 
 @keyframes stamp-in {
-  from {
+  0% {
     opacity: 0;
-    transform: rotate(-8deg) scale(2);
+    transform: scale(2);
   }
-  to {
+  34% {
     opacity: 1;
-    transform: rotate(-8deg) scale(1);
+    transform: scale(1.5);
+  }
+  67% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
 .fortune__luck {
-  font-family: var(--font-display);
-  font-weight: 900;
+  font-family: var(--font-pixel);
   font-size: var(--text-lg);
   color: var(--accent);
 }
 
 .fortune__danger {
+  font-family: var(--font-body);
   font-size: var(--text-xs);
   font-weight: 700;
   color: var(--ink-soft);
@@ -226,64 +238,58 @@
   align-items: center;
   gap: var(--space-2);
   justify-self: start;
-  padding: 2px var(--space-3) 2px var(--space-1);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-pill);
+  margin: 2px;
+  padding: 2px var(--space-2) 2px var(--space-1);
   background: var(--band);
+  box-shadow:
+    -2px 0 0 0 var(--px-ink),
+    2px 0 0 0 var(--px-ink),
+    0 -2px 0 0 var(--px-ink),
+    0 2px 0 0 var(--px-ink);
+  font-family: var(--font-pixel);
   font-size: var(--text-xs);
-  font-weight: 700;
 }
 
 .fortune__category-icon {
-  width: 22px;
-  height: 22px;
-}
-
-.fortune__category-icon svg {
-  width: 100%;
-  height: 100%;
+  line-height: 0;
 }
 
 .fortune__title {
   font-size: var(--text-lg);
 }
 
+/* texto longo: fonte arredondada, não pixel */
 .fortune__body {
   font-size: var(--text-md);
 }
 
 .fortune__extra {
   padding-top: var(--space-3);
-  border-top: 2px dashed var(--cream-300);
+  background: repeating-linear-gradient(to right, var(--cream-300) 0 8px, transparent 8px 16px) top / 100% var(--px) no-repeat;
   font-size: var(--text-sm);
   font-style: italic;
   color: var(--ink-soft);
 }
 
 .fortune__extra-label {
+  font-family: var(--font-pixel);
   font-style: normal;
-  font-weight: 700;
   color: var(--accent);
 }
 
 .fortune__number {
   justify-self: end;
+  font-family: var(--font-pixel);
   font-size: var(--text-xs);
-  font-weight: 700;
   color: var(--ink-soft);
 }
 
 /* ---------- Variações por nível de sorte ----------
-   Sem vermelho/alerta: 凶 usa um azul calmo. Todos os tons de --accent
-   têm contraste AA sobre o papel creme. */
+   Sem vermelho/alerta: 凶 usa um azul calmo. Todos os --accent têm
+   contraste AA sobre o papel creme. */
 .fortune--daikichi {
   --accent: var(--sakura-700);
-  --band: linear-gradient(90deg, var(--gold), var(--sakura-200));
-  border-top-color: var(--gold);
-}
-
-.fortune--daikichi .fortune__stamp {
-  background: radial-gradient(circle, #fff6d9 0, transparent 70%);
+  --band: repeating-linear-gradient(to right, var(--px-gold) 0 8px, var(--sakura-200) 8px 16px);
 }
 
 .fortune--chukichi {

@@ -71,18 +71,18 @@ export default function OraclePage() {
           <p className="oracle__tagline">{mod.tagline}</p>
         </header>
 
-        <section className={`oracle__altar ${fortune ? 'oracle__altar--compact' : ''}`} aria-label="Altar do oráculo">
-          <OmikujiBox shaking={shaking} />
+        <section className="oracle__altar" aria-label="Altar do oráculo">
+          <OmikujiBox shaking={shaking} drawn={fortune !== null} />
           <div className="oracle__pigeon">
             <Pigeon hat="omikuji" />
           </div>
-          <p className="oracle__line">{line}</p>
+          <p className="oracle__line px-box">{line}</p>
         </section>
 
         {fortune && <FortuneSlip key={drawCount} fortune={fortune} />}
 
         <button type="button" className="btn btn--primary oracle__draw" onClick={draw} aria-disabled={shaking || undefined}>
-          {shaking ? 'Sacudindo…' : fortune ? '🎋 Tirar outra previsão' : '🎋 Tirar um omikuji'}
+          {shaking ? 'Sacudindo…' : fortune ? '▶ Tirar outra previsão' : '▶ Tirar um omikuji'}
         </button>
 
         <p className="visually-hidden" role="status">

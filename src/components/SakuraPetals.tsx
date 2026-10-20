@@ -1,4 +1,6 @@
 import { useMemo, type CSSProperties } from 'react'
+import { PixelSprite } from '../pixel/PixelSprite'
+import { PETAL } from '../pixel/sprites/props'
 import './SakuraPetals.css'
 
 interface SakuraPetalsProps {
@@ -14,18 +16,17 @@ function seeded(seed: number) {
   }
 }
 
-/** Pétalas caindo em CSS puro. Some por completo com movimento reduzido. */
-export function SakuraPetals({ count = 14 }: SakuraPetalsProps) {
+/** Pétalas em pixel art caindo aos "trancos" (steps). Somem com movimento reduzido. */
+export function SakuraPetals({ count = 12 }: SakuraPetalsProps) {
   const petals = useMemo(() => {
     const rand = seeded(7)
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       style: {
         '--x': `${Math.round(rand() * 100)}vw`,
-        '--drift': `${Math.round(rand() * 120 - 60)}px`,
-        '--size': `${10 + Math.round(rand() * 8)}px`,
-        '--dur': `${7 + rand() * 6}s`,
-        '--delay': `${-rand() * 12}s`,
+        '--drift': `${Math.round(rand() * 30 - 15) * 4}px`,
+        '--dur': `${8 + rand() * 6}s`,
+        '--delay': `${-rand() * 14}s`,
       } as CSSProperties,
     }))
   }, [count])
@@ -33,7 +34,9 @@ export function SakuraPetals({ count = 14 }: SakuraPetalsProps) {
   return (
     <div className="petals" aria-hidden="true">
       {petals.map((p) => (
-        <span key={p.id} className="petals__petal" style={p.style} />
+        <span key={p.id} className="petals__petal" style={p.style}>
+          <PixelSprite width={PETAL.width} height={PETAL.height} layers={[{ grid: PETAL.grid }]} />
+        </span>
       ))}
     </div>
   )

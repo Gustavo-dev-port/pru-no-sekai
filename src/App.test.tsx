@@ -26,7 +26,7 @@ describe('Santuário — portão e travessia', () => {
     let previous = GUARDIAN_GREETING_GATE
     for (let i = 0; i < 20; i++) {
       await user.click(pigeon)
-      const current = pigeon.parentElement!.querySelector('.guardian__bubble')!.textContent
+      const current = pigeon.parentElement!.querySelector('.guardian__text')!.textContent
       expect(current).not.toBe(previous)
       previous = current!
     }

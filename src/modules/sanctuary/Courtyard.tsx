@@ -5,6 +5,8 @@ import { SakuraPetals } from '../../components/SakuraPetals'
 import { GUARDIAN_GREETING_INSIDE } from '../../data/guardianMessages'
 import { MODULES } from '../../data/modules'
 import { useFocusOnMount } from '../../hooks/useFocusOnMount'
+import { PixelSprite } from '../../pixel/PixelSprite'
+import { EMA_KNOT } from '../../pixel/sprites/props'
 import { hrefFor } from '../../router'
 
 const EXPERIENCES = MODULES.filter((m) => m.id !== 'santuario')
@@ -35,23 +37,29 @@ export function Courtyard({ onBackToGate }: CourtyardProps) {
           </h1>
         </header>
 
-        <Guardian greeting={GUARDIAN_GREETING_INSIDE} size="sm" />
+        <Guardian greeting={GUARDIAN_GREETING_INSIDE} />
 
         <nav aria-label="Experiências do santuário" className="courtyard__nav">
           <ul className="ema-grid">
             {EXPERIENCES.map((m, i) => (
               <li key={m.id} style={{ animationDelay: `${150 + i * 120}ms` }}>
-                <a className="ema" href={hrefFor(m.id)}>
-                  <span className="ema__hole" aria-hidden="true" />
+                <a className="ema px-box" href={hrefFor(m.id)}>
+                  <span className="ema__knot" aria-hidden="true">
+                    <PixelSprite width={EMA_KNOT.width} height={EMA_KNOT.height} layers={[{ grid: EMA_KNOT.grid }]} />
+                  </span>
                   <span className="ema__icon">
-                    <ModuleIcon id={m.id} />
+                    <ModuleIcon id={m.id} scale={4} />
                   </span>
                   <span className="ema__jp jp" lang="ja" aria-hidden="true">
                     {m.jp}
                   </span>
                   <span className="ema__name">{m.name}</span>
                   <span className="ema__tagline">{m.tagline}</span>
-                  {m.status === 'em-construcao' && <span className="badge badge--wip">Em construção</span>}
+                  {m.status === 'em-construcao' ? (
+                    <span className="badge badge--wip">Em construção</span>
+                  ) : (
+                    <span className="badge badge--done">Aberto!</span>
+                  )}
                 </a>
               </li>
             ))}
@@ -63,7 +71,7 @@ export function Courtyard({ onBackToGate }: CourtyardProps) {
         </button>
       </main>
 
-      <footer className="courtyard__footer">feito com milho e carinho 🌸</footer>
+      <footer className="courtyard__footer">feito com milho e carinho ♥</footer>
     </div>
   )
 }

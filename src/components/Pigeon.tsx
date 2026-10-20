@@ -1,93 +1,86 @@
-import { useId } from 'react'
+import { useEffect, useState } from 'react'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
+import { PixelSprite, type SpriteLayer } from '../pixel/PixelSprite'
+import {
+  BAG_MAIL,
+  HAT_GUARDIAN,
+  HAT_MAIL,
+  HAT_SEER,
+  PIGEON_BASE_Y,
+  PIGEON_BLINK,
+  PIGEON_BODY,
+  PIGEON_HEAD,
+  PIGEON_HEIGHT,
+  PIGEON_WIDTH,
+  PIGEON_WING_DOWN,
+  PIGEON_WING_UP,
+  type PigeonAccessory,
+} from '../pixel/sprites/pigeon'
+import { useTicker } from '../pixel/useTicker'
 import './Pigeon.css'
 
+/** Função do pombo: muda só o acessório, o corpo é sempre o mesmo. */
 export type PigeonHat = 'none' | 'eboshi' | 'mail' | 'omikuji'
+
+const ACCESSORIES: Record<PigeonHat, PigeonAccessory[]> = {
+  none: [],
+  eboshi: [HAT_GUARDIAN],
+  omikuji: [HAT_SEER],
+  mail: [BAG_MAIL, HAT_MAIL],
+}
+
+/** Um quadro de animação a cada 220 ms: ritmo de sprite, não de vídeo. */
+const FRAME_MS = 220
+const FLAP_MS = 660
 
 interface PigeonProps {
   hat?: PigeonHat
   /** Quando ausente, o pombo é decorativo (aria-hidden). */
   title?: string
   className?: string
-  /** Liga o balanço de cabeça contínuo. */
-  bobbing?: boolean
+  /** Liga o ciclo de bob de cabeça + piscadas. */
+  animated?: boolean
+  /** Muda a cada cutucada: o pombo dá um pulinho batendo as asas. */
+  pokeCount?: number
+  /** Px de CSS por pixel do sprite. Padrão do jogo: 4. */
+  scale?: number
 }
 
-/** Pombo kawaii em SVG, olhando para a esquerda. Reutilizado em todos os módulos. */
-export function Pigeon({ hat = 'none', title, className = '', bobbing = true }: PigeonProps) {
-  const neckId = useId()
+export function Pigeon({ hat = 'none', title, className = '', animated = true, pokeCount = 0, scale = 4 }: PigeonProps) {
+  const reducedMotion = usePrefersReducedMotion()
+  const live = animated && !reducedMotion
+  const tick = useTicker(live ? FRAME_MS : null)
+  const [flapping, setFlapping] = useState(false)
+
+  useEffect(() => {
+    if (pokeCount === 0 || reducedMotion) return
+    setFlapping(true)
+    const id = window.setTimeout(() => setFlapping(false), FLAP_MS)
+    return () => window.clearTimeout(id)
+  }, [pokeCount, reducedMotion])
+
+  // bob: cabeça vai 1 pixel para a frente a cada 2 quadros
+  const headDx = live && Math.floor(tick / 2) % 2 === 1 ? -1 : 0
+  // piscada: 1 quadro a cada 17
+  const blinking = live && tick % 17 === 16
+  // asas: alterna cima/baixo enquanto bate
+  const wingUp = flapping && tick % 2 === 0
+
+  const y = (top: number) => PIGEON_BASE_Y + top
+  const accessories = ACCESSORIES[hat]
+
+  const layers: SpriteLayer[] = [
+    { grid: PIGEON_BODY, dy: y(0) },
+    { grid: wingUp ? PIGEON_WING_UP : PIGEON_WING_DOWN, dy: y(0) },
+    ...accessories.filter((a) => !a.onHead).map((a) => ({ grid: a.grid, dy: y(a.top) })),
+    { grid: PIGEON_HEAD, dx: headDx, dy: y(0) },
+    ...(blinking ? [{ grid: PIGEON_BLINK, dx: headDx, dy: y(0) }] : []),
+    ...accessories.filter((a) => a.onHead).map((a) => ({ grid: a.grid, dx: headDx, dy: y(a.top) })),
+  ]
+
   return (
-    <svg
-      viewBox="0 0 120 120"
-      className={`pigeon ${bobbing ? 'pigeon--bobbing' : ''} ${className}`}
-      role={title ? 'img' : undefined}
-      aria-label={title}
-      aria-hidden={title ? undefined : true}
-    >
-      <defs>
-        <linearGradient id={neckId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="var(--neck-green)" />
-          <stop offset="1" stopColor="var(--neck-purple)" />
-        </linearGradient>
-      </defs>
-
-      {/* sombra no chão */}
-      <ellipse cx="62" cy="111" rx="30" ry="4" fill="var(--ink)" opacity="0.12" />
-
-      {/* patinhas */}
-      <g stroke="var(--pigeon-feet)" strokeWidth="3.5" strokeLinecap="round" fill="none">
-        <path d="M56 98 L55 109 M55 109 L49 111 M55 109 L58 112" />
-        <path d="M70 98 L71 109 M71 109 L65 111 M71 109 L75 112" />
-      </g>
-
-      {/* cauda */}
-      <path d="M90 78 L114 70 Q117 78 112 86 L92 92 Z" fill="var(--pigeon-500)" />
-
-      {/* corpo */}
-      <ellipse cx="64" cy="78" rx="34" ry="25" fill="var(--pigeon-300)" />
-      <ellipse cx="58" cy="86" rx="22" ry="13" fill="var(--pigeon-100)" opacity="0.7" />
-
-      {/* asa com as duas faixas clássicas de pombo */}
-      <path d="M62 66 Q88 58 100 76 Q92 92 70 90 Q60 80 62 66 Z" fill="var(--pigeon-400)" />
-      <path d="M74 74 Q84 72 92 78" stroke="var(--pigeon-700)" strokeWidth="3" strokeLinecap="round" fill="none" />
-      <path d="M72 81 Q82 80 90 85" stroke="var(--pigeon-700)" strokeWidth="3" strokeLinecap="round" fill="none" />
-
-      {/* cabeça + pescoço (animados juntos) */}
-      <g className="pigeon__head">
-        <ellipse cx="46" cy="58" rx="17" ry="15" fill={`url(#${neckId})`} />
-        <circle cx="40" cy="40" r="19" fill="var(--pigeon-400)" />
-
-        {/* bico */}
-        <path d="M23 41 L12 45 L23 48 Z" fill="var(--pigeon-feet)" />
-        <ellipse cx="24.5" cy="41.5" rx="3.5" ry="2.4" fill="var(--pigeon-100)" />
-
-        {/* olho */}
-        <circle cx="35" cy="37" r="5.2" fill="var(--pigeon-eye)" />
-        <circle cx="34.5" cy="37" r="3.2" fill="var(--lacquer)" />
-        <circle cx="33.2" cy="35.6" r="1.2" fill="#fff" />
-
-        {/* bochecha */}
-        <ellipse cx="44" cy="48" rx="5.5" ry="3.2" fill="var(--sakura-300)" opacity="0.8" />
-
-        {hat === 'eboshi' && (
-          <g>
-            <path d="M30 25 Q36 2 54 14 Q52 22 48 25 Z" fill="var(--lacquer)" />
-            <path d="M28 25 L52 25" stroke="var(--lacquer)" strokeWidth="4" strokeLinecap="round" />
-          </g>
-        )}
-        {hat === 'mail' && (
-          <g>
-            <path d="M27 26 Q40 10 54 24 Z" fill="#5b7fb8" />
-            <path d="M22 26 L50 26" stroke="#3d5d93" strokeWidth="4" strokeLinecap="round" />
-            <path d="M38 17 l2 4 l-4 0 Z" fill="var(--gold)" />
-          </g>
-        )}
-        {hat === 'omikuji' && (
-          <g>
-            <path d="M30 28 Q40 18 52 26" stroke="var(--torii)" strokeWidth="6" strokeLinecap="round" fill="none" />
-            <path d="M51 25 l9 -4 l-3 8 Z" fill="var(--torii)" />
-          </g>
-        )}
-      </g>
-    </svg>
+    <span className={`pigeon ${flapping ? 'pigeon--hop' : ''} ${className}`}>
+      <PixelSprite width={PIGEON_WIDTH} height={PIGEON_HEIGHT} layers={layers} scale={scale} title={title} />
+    </span>
   )
 }

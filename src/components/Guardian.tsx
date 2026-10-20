@@ -1,31 +1,38 @@
 import { GUARDIAN_MESSAGES } from '../data/guardianMessages'
 import { useRotatingMessage } from '../hooks/useRotatingMessage'
+import { PixelSprite } from '../pixel/PixelSprite'
+import { BUBBLE_TAIL } from '../pixel/sprites/props'
 import { Pigeon } from './Pigeon'
 import './Guardian.css'
 
 interface GuardianProps {
   greeting: string
-  size?: 'lg' | 'sm'
 }
 
-/** Pombo-sama: balão de fala + pombo clicável que troca de mensagem. */
-export function Guardian({ greeting, size = 'lg' }: GuardianProps) {
+/** Pombo-sama: caixa de diálogo + pombo clicável que troca de mensagem. */
+export function Guardian({ greeting }: GuardianProps) {
   const { message, next, count } = useRotatingMessage(GUARDIAN_MESSAGES, greeting)
 
   return (
-    <div className={`guardian guardian--${size}`}>
-      <p className="guardian__bubble" aria-live="polite">
-        <span key={count} className="guardian__text">
-          {message}
+    <div className="guardian">
+      <div className="guardian__dialog">
+        <p className="guardian__bubble px-box" aria-live="polite">
+          <span className="guardian__name" aria-hidden="true">
+            Pombo-sama
+          </span>
+          <span key={count} className="guardian__text">
+            {message}
+          </span>
+        </p>
+        <span className="guardian__tail">
+          <PixelSprite width={BUBBLE_TAIL.width} height={BUBBLE_TAIL.height} layers={[{ grid: BUBBLE_TAIL.grid }]} />
         </span>
-      </p>
+      </div>
       <button type="button" className="guardian__button" onClick={next} aria-label="Cutucar o Pombo-sama para ouvir outra mensagem">
-        <span key={count} className={count > 0 ? 'guardian__poke' : undefined}>
-          <Pigeon hat="eboshi" />
-        </span>
+        <Pigeon hat="eboshi" pokeCount={count} />
       </button>
       <p className="guardian__hint" aria-hidden="true">
-        toque no pombo
+        ▲ toque no pombo
       </p>
     </div>
   )
