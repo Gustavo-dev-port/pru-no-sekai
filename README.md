@@ -21,6 +21,8 @@ Abra o endereço que o Vite mostrar (por padrão, http://localhost:5173).
 | Comando | O que faz |
 | --- | --- |
 | `npm run dev` | Servidor de desenvolvimento com recarga automática |
+| `npm test` | Roda os testes automatizados (Vitest) uma vez |
+| `npm run test:watch` | Testes em modo observação |
 | `npm run typecheck` | Checagem de tipos do TypeScript |
 | `npm run build` | Checa os tipos e gera a versão de produção em `dist/` |
 | `npm run preview` | Serve o `dist/` localmente para testar a build |

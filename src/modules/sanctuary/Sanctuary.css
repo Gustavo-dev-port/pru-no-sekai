@@ -188,9 +188,13 @@
   animation: pop-in var(--dur-slow) var(--ease-bounce) both;
 }
 
-/* Ema: plaquinha de madeira em formato de casinha, pendurada por um cordão */
+/* Ema: plaquinha de madeira em formato de casinha, pendurada por um cordão.
+   O formato (clip-path) fica nos pseudo-elementos, não no link: assim o
+   contorno de foco do link é desenhado inteiro, por fora da plaquinha. */
 .ema {
+  --ema-shape: polygon(0 16%, 50% 0, 100% 16%, 100% 100%, 0 100%);
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -199,15 +203,35 @@
   padding: var(--space-6) var(--space-4) var(--space-5);
   text-align: center;
   text-decoration: none;
-  background: linear-gradient(170deg, #f3dcb0 0%, var(--wood) 55%, #e2c08a 100%);
-  clip-path: polygon(0 16%, 50% 0, 100% 16%, 100% 100%, 0 100%);
   border-radius: 0 0 var(--radius-md) var(--radius-md);
-  filter: drop-shadow(0 5px 0 var(--wood-dark));
   transition: transform var(--dur-med) var(--ease-bounce);
   transform-origin: 50% 0;
 }
 
-.ema:hover {
+/* face de madeira */
+.ema::before,
+.ema::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: var(--ema-shape);
+  border-radius: inherit;
+}
+
+.ema::before {
+  z-index: -1;
+  background: linear-gradient(170deg, #f3dcb0 0%, var(--wood) 55%, #e2c08a 100%);
+}
+
+/* base sólida (o "pop" de minijogo) */
+.ema::after {
+  z-index: -2;
+  transform: translateY(5px);
+  background: var(--wood-dark);
+}
+
+.ema:hover,
+.ema:focus-visible {
   transform: rotate(-2deg) translateY(-3px);
 }
 
@@ -215,10 +239,11 @@
   transform: rotate(1deg) translateY(2px);
 }
 
-/* clip-path cortaria o outline do foco; usa um contorno interno */
+/* Anel de foco duplo (creme + rosa escuro): visível sobre a madeira e sobre o fundo creme. */
 .ema:focus-visible {
-  outline: none;
-  box-shadow: inset 0 0 0 4px var(--sakura-700);
+  outline: 4px solid var(--sakura-700);
+  outline-offset: 6px;
+  box-shadow: 0 0 0 6px var(--cream-50);
 }
 
 .ema__hole {

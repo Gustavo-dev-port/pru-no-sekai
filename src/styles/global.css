@@ -104,7 +104,8 @@ svg {
   box-shadow: var(--shadow-pressed);
 }
 
-.btn:disabled {
+.btn:disabled,
+.btn[aria-disabled="true"] {
   cursor: default;
   opacity: 0.7;
 }

@@ -151,6 +151,56 @@ Veja o [README](../README.md): `npm install` e depois `npm run dev`.
 - [ ] Textos personalizados das cartas e previsões (precisam vir do dono do projeto, porque são pessoais)
 - [ ] Sons e efeitos sonoros, desligados por padrão (não estavam no briefing; ficam como sugestão)
 - [ ] Hospedar a fonte localmente para não depender do Google Fonts (otimização de rede móvel)
-- [ ] Testes automatizados (ex.: Vitest para `pickIndexAvoiding` e para o roteador)
 - [ ] Publicação na Vercel e teste em aparelhos reais (iOS Safari e Android Chrome)
 - [ ] Auditoria de acessibilidade com leitor de tela real (VoiceOver/TalkBack)
+
+---
+
+## Revisão 1 — ajustes pedidos na auditoria
+
+### 1. Foco dos cartões ema
+**Problema confirmado.** O `clip-path` estava no próprio link. O contorno de foco interno (`box-shadow: inset`) era cortado nas diagonais do telhado da ema. A sombra `drop-shadow` também era cortada pelo mesmo `clip-path` e não aparecia.
+
+**Correção** (`src/modules/sanctuary/Sanctuary.css`):
+- O formato de casinha agora fica em dois pseudo-elementos: `::before` é a face de madeira e `::after` é a base sólida.
+- O link continua retangular, então o anel de foco é desenhado inteiro, por fora da plaquinha.
+- O anel é duplo, creme (6 px) + rosa escuro (4 px), para aparecer tanto sobre a madeira quanto sobre o fundo creme.
+- Com o foco, a ema também levanta como no hover.
+
+### 2. Foco durante a travessia do torii
+**Problema confirmado.** O botão recebia `disabled` durante os 1,3 s da travessia. Um botão desabilitado perde o foco, que caía no `<body>`. Nesse intervalo, nada era anunciado para o leitor de tela.
+
+**Correção** (`src/modules/sanctuary/Gate.tsx`):
+- O botão continua focável, com `aria-disabled="true"`, texto "Atravessando…" e cliques repetidos ignorados.
+- Uma região `role="status"` anuncia "Atravessando o torii. Entrando no santuário…".
+- O `<main>` fica com `aria-busy="true"`, e o título e o pombo ficam `inert`, fora do Tab e do toque.
+- Ao final, o pátio leva o foco ao seu `h1`.
+- Com movimento reduzido, a troca é imediata e o foco vai direto ao `h1` do pátio.
+
+### 3. Testes automatizados
+Vitest + Testing Library + jsdom: `npm test`. São **24 testes em 3 arquivos, todos passando**.
+
+- `src/lib/random.test.ts`, o sorteio sem repetição:
+  - 10.000 sorteios seguidos sem repetir o anterior
+  - todos os outros índices são alcançáveis
+  - bordas do sorteio
+  - lista de um item e lista vazia
+- `src/router.test.ts`, o roteamento:
+  - cada hash leva ao módulo certo
+  - rota desconhecida cai no santuário
+  - ida e volta `hrefFor` → `parseHash`
+  - rotas únicas
+- `src/App.test.tsx`, a navegação e a acessibilidade:
+  - foco inicial no título
+  - o pombo nunca repete a fala anterior (20 cutucadas)
+  - foco, `aria-disabled`, `status`, `aria-busy` e `inert` durante a travessia, e foco no título do pátio ao final
+  - entrada imediata com movimento reduzido
+  - as três ema com os links certos
+  - cada módulo abre com título focado, `document.title`, selo "Em construção", 4 abas e `aria-current` correto
+  - voltar de um módulo leva direto ao pátio
+  - "Voltar ao portão" funciona
+
+`npm run build` (checagem de tipos + build) roda sem erros.
+
+### Ainda não verificado
+- **Inspeção visual no navegador.** O anel de foco da ema e a travessia foram validados por código e por testes em jsdom, mas ainda não vistos em um navegador real. Isso fica para a versão publicada na Vercel ou para uma sessão com pré-visualização.
