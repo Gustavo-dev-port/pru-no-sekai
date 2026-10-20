@@ -97,8 +97,17 @@ describe('Navegação entre os quatro módulos', () => {
     expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', '#/oraculo')
   })
 
+  it('#/alimentar abre o minijogo (sem selo de construção)', async () => {
+    render(<App />)
+    goTo('#/alimentar')
+    expect(await screen.findByRole('heading', { level: 1, name: 'Alimente o Pombo' })).toHaveFocus()
+    expect(screen.queryByText('Em construção')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /jogar grãozinho/i })).toBeInTheDocument()
+    const bottomNav = screen.getByRole('navigation', { name: /módulos do pru no sekai/i })
+    expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', '#/alimentar')
+  })
+
   it.each([
-    ['#/alimentar', 'Alimente o Pombo'],
     ['#/correio', 'Correio Pombo do Amor'],
   ])('%s abre "%s", marca a aba atual e mostra que está em construção', async (hash, name) => {
     render(<App />)

@@ -9,12 +9,15 @@ import {
   PIGEON_BASE_Y,
   PIGEON_BLINK,
   PIGEON_BODY,
+  PIGEON_HAPPY_EYES,
   PIGEON_HEAD,
   PIGEON_HEIGHT,
   PIGEON_WIDTH,
   PIGEON_WING_DOWN,
+  PIGEON_VARIANTS,
   PIGEON_WING_UP,
   type PigeonAccessory,
+  type PigeonVariant,
 } from '../pixel/sprites/pigeon'
 import { useTicker } from '../pixel/useTicker'
 import './Pigeon.css'
@@ -44,12 +47,31 @@ interface PigeonProps {
   pokeCount?: number
   /** Px de CSS por pixel do sprite. Padrão do jogo: 4. */
   scale?: number
+  /** Cor das penas (pombos comuns do minijogo). */
+  variant?: PigeonVariant
+  /** Olha para a direita em vez da esquerda. */
+  flip?: boolean
+  /** Pose de bicar: cabeça abaixada e olhinhos felizes. */
+  pecking?: boolean
+  /** Atraso em quadros, para vários pombos não balançarem em sincronia. */
+  phase?: number
 }
 
-export function Pigeon({ hat = 'none', title, className = '', animated = true, pokeCount = 0, scale = 4 }: PigeonProps) {
+export function Pigeon({
+  hat = 'none',
+  title,
+  className = '',
+  animated = true,
+  pokeCount = 0,
+  scale = 4,
+  variant = 'classico',
+  flip = false,
+  pecking = false,
+  phase = 0,
+}: PigeonProps) {
   const reducedMotion = usePrefersReducedMotion()
   const live = animated && !reducedMotion
-  const tick = useTicker(live ? FRAME_MS : null)
+  const tick = useTicker(live ? FRAME_MS : null) + (live ? phase : 0)
   const [flapping, setFlapping] = useState(false)
 
   useEffect(() => {
@@ -59,10 +81,12 @@ export function Pigeon({ hat = 'none', title, className = '', animated = true, p
     return () => window.clearTimeout(id)
   }, [pokeCount, reducedMotion])
 
+  // bicando: cabeça desce 2 pixels e vai 1 para a frente (não depende de animação)
+  const headDy = pecking ? 2 : 0
   // bob: cabeça vai 1 pixel para a frente a cada 2 quadros
-  const headDx = live && Math.floor(tick / 2) % 2 === 1 ? -1 : 0
+  const headDx = pecking ? -1 : live && Math.floor(tick / 2) % 2 === 1 ? -1 : 0
   // piscada: 1 quadro a cada 17
-  const blinking = live && tick % 17 === 16
+  const blinking = !pecking && live && tick % 17 === 16
   // asas: alterna cima/baixo enquanto bate
   const wingUp = flapping && tick % 2 === 0
 
@@ -73,14 +97,23 @@ export function Pigeon({ hat = 'none', title, className = '', animated = true, p
     { grid: PIGEON_BODY, dy: y(0) },
     { grid: wingUp ? PIGEON_WING_UP : PIGEON_WING_DOWN, dy: y(0) },
     ...accessories.filter((a) => !a.onHead).map((a) => ({ grid: a.grid, dy: y(a.top) })),
-    { grid: PIGEON_HEAD, dx: headDx, dy: y(0) },
-    ...(blinking ? [{ grid: PIGEON_BLINK, dx: headDx, dy: y(0) }] : []),
-    ...accessories.filter((a) => a.onHead).map((a) => ({ grid: a.grid, dx: headDx, dy: y(a.top) })),
+    { grid: PIGEON_HEAD, dx: headDx, dy: y(headDy) },
+    ...(blinking ? [{ grid: PIGEON_BLINK, dx: headDx, dy: y(headDy) }] : []),
+    ...(pecking ? [{ grid: PIGEON_HAPPY_EYES, dx: headDx, dy: y(headDy) }] : []),
+    ...accessories.filter((a) => a.onHead).map((a) => ({ grid: a.grid, dx: headDx, dy: y(a.top + headDy) })),
   ]
 
   return (
     <span className={`pigeon ${flapping ? 'pigeon--hop' : ''} ${className}`}>
-      <PixelSprite width={PIGEON_WIDTH} height={PIGEON_HEIGHT} layers={layers} scale={scale} title={title} />
+      <PixelSprite
+        width={PIGEON_WIDTH}
+        height={PIGEON_HEIGHT}
+        layers={layers}
+        scale={scale}
+        title={title}
+        recolor={PIGEON_VARIANTS[variant]}
+        className={flip ? 'pixel-sprite--flip' : ''}
+      />
     </span>
   )
 }

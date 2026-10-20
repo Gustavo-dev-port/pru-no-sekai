@@ -22,6 +22,13 @@ export const LANTERN = {
   ],
 } as const
 
+/** Grãozinho de milho jogado no chão. */
+export const GRAIN = {
+  width: 3,
+  height: 3,
+  grid: ['.k.', 'kyk', 'kLk'],
+} as const
+
 /** Pétala de sakura caindo. */
 export const PETAL = {
   width: 3,
