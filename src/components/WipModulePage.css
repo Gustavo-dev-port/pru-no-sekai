@@ -1,10 +1,12 @@
 .wip-page {
   min-height: 100dvh;
-  background:
-    radial-gradient(circle at 20% 0%, var(--sakura-100) 0, transparent 45%),
-    radial-gradient(circle at 100% 100%, var(--sage-100) 0, transparent 50%),
-    var(--cream-50);
-  padding-bottom: 104px; /* espaço da barra inferior */
+  background: linear-gradient(
+    to bottom,
+    var(--sakura-100) 0 64px,
+    #ffecee 64px 128px,
+    var(--cream-50) 128px
+  );
+  padding-bottom: 112px; /* espaço da barra inferior */
 }
 
 .wip-page__main {
@@ -38,15 +40,11 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-5) var(--space-4);
-  background: var(--cream-50);
-  border: var(--border-chunky);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-pop);
-  animation: pop-in var(--dur-slow) var(--ease-bounce);
+  animation: px-pop-in var(--dur-slow) steps(4);
 }
 
 .wip-card__pigeon {
-  width: 120px;
+  line-height: 0;
 }
 
 .wip-card__line {
@@ -76,20 +74,23 @@
   gap: var(--space-3);
 }
 
+/* caixinha de checklist pixel */
 .wip-card__check {
   flex: none;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 2px dashed var(--ink-soft);
-  border-radius: 6px;
-  font-weight: 900;
+  width: 20px;
+  height: 20px;
+  background: var(--cream-50);
+  box-shadow:
+    -2px 0 0 0 var(--ink-soft),
+    2px 0 0 0 var(--ink-soft),
+    0 -2px 0 0 var(--ink-soft),
+    0 2px 0 0 var(--ink-soft);
+  font-family: var(--font-pixel);
   color: var(--sage-700);
 }
 
 .is-done .wip-card__check {
-  border-style: solid;
-  border-color: var(--sage-700);
   background: var(--sage-100);
 }

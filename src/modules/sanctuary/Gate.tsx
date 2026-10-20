@@ -1,4 +1,4 @@
-import { GardenScene } from '../../components/GardenScene'
+import { PixelGarden } from '../../components/PixelGarden'
 import { Guardian } from '../../components/Guardian'
 import { SakuraPetals } from '../../components/SakuraPetals'
 import { GUARDIAN_GREETING_GATE } from '../../data/guardianMessages'
@@ -25,7 +25,7 @@ export function Gate({ entering, onEnter }: GateProps) {
   return (
     <main className={`gate ${entering ? 'gate--entering' : ''}`} aria-busy={entering}>
       <div className="gate__scene">
-        <GardenScene />
+        <PixelGarden />
       </div>
       <SakuraPetals />
 
@@ -50,7 +50,7 @@ export function Gate({ entering, onEnter }: GateProps) {
             onClick={handleEnter}
             aria-disabled={entering || undefined}
           >
-            {entering ? 'Atravessando…' : '⛩ Atravessar o torii'}
+            {entering ? 'Atravessando…' : '▶ Atravessar o torii'}
           </button>
         </div>
       </div>

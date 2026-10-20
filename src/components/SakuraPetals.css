@@ -8,27 +8,32 @@
 
 .petals__petal {
   position: absolute;
-  top: -24px;
+  top: -16px;
   left: var(--x);
-  width: var(--size);
-  height: calc(var(--size) * 0.7);
-  background: var(--sakura-300);
-  border-radius: 100% 0 100% 0;
-  opacity: 0.85;
-  animation: petal-fall var(--dur) linear var(--delay) infinite;
-  will-change: transform;
+  line-height: 0;
+  /* steps(): a pétala "anda" em saltos, como sprite, sem deslizar liso */
+  animation: petal-fall var(--dur) steps(48) var(--delay) infinite;
 }
 
-.petals__petal:nth-child(3n) {
-  background: var(--sakura-200);
+.petals__petal:nth-child(even) {
+  transform: scaleX(-1);
 }
 
 @keyframes petal-fall {
-  from {
-    transform: translate(0, 0) rotate(0deg);
+  0% {
+    translate: 0 0;
   }
-  to {
-    transform: translate(var(--drift), 110vh) rotate(540deg);
+  25% {
+    translate: calc(var(--drift) * -0.5) 27vh;
+  }
+  50% {
+    translate: var(--drift) 55vh;
+  }
+  75% {
+    translate: calc(var(--drift) * 0.25) 82vh;
+  }
+  100% {
+    translate: calc(var(--drift) * 0.75) 110vh;
   }
 }
 

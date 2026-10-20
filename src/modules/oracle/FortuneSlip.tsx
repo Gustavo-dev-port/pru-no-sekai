@@ -15,7 +15,7 @@ export function FortuneSlip({ fortune }: { fortune: ParsedFortune }) {
   }, [])
 
   return (
-    <article className={`fortune fortune--${fortune.luck}`} aria-labelledby={`fortune-${fortune.id}-title`}>
+    <article className={`fortune px-box fortune--${fortune.luck}`} aria-labelledby={`fortune-${fortune.id}-title`}>
       <header className="fortune__header">
         <span className="fortune__stamp" lang="ja" aria-hidden="true">
           {fortune.kanji}

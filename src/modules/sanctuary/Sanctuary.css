@@ -4,35 +4,24 @@
   min-height: 100dvh;
   overflow: hidden;
   isolation: isolate;
+  background: #fff4ef;
 }
 
 .gate__scene {
   position: absolute;
   inset: 0;
   z-index: var(--z-scene);
-  transform-origin: 50% 54%; /* vão do torii */
-  transition:
-    transform 1.3s cubic-bezier(0.6, 0, 0.4, 1),
-    filter 1.3s ease-in;
+  overflow: hidden;
+  /* transform-origin é calculado pelo PixelGarden (vão do torii) */
+  transition: transform 1.3s steps(7);
 }
 
-.garden {
-  width: 100%;
-  height: 100%;
-}
-
-.garden__lantern-light {
-  animation: flicker 2.4s ease-in-out infinite;
-}
-
-@keyframes flicker {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+/* canvas centrado e preso embaixo; tamanho em múltiplos de 4px */
+.pixel-garden {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 }
 
 .gate__ui {
@@ -44,34 +33,43 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--space-5);
-  padding: max(var(--space-5), env(safe-area-inset-top)) var(--space-4)
-    max(var(--space-5), env(safe-area-inset-bottom));
-  transition: opacity 0.4s ease-out;
+  padding: max(var(--space-6), env(safe-area-inset-top)) var(--space-4) max(var(--space-6), env(safe-area-inset-bottom));
+  transition: opacity 0.36s steps(3);
 }
 
 .gate__title {
   text-align: center;
-  animation: pop-in var(--dur-slow) var(--ease-bounce) both;
+  animation: px-pop-in var(--dur-slow) steps(4) both;
 }
 
+/* título de tela de abertura: contorno creme + sombra dura de 1 pixel */
 .gate__title h1 {
   font-size: var(--text-hero);
-  color: var(--ink);
+  color: var(--px-ink);
+  letter-spacing: 0.04em;
   text-shadow:
-    3px 3px 0 var(--cream-50),
-    -2px -2px 0 var(--cream-50),
-    2px -2px 0 var(--cream-50),
-    -2px 2px 0 var(--cream-50);
+    var(--px) 0 0 var(--cream-50),
+    calc(var(--px) * -1) 0 0 var(--cream-50),
+    0 var(--px) 0 var(--cream-50),
+    0 calc(var(--px) * -1) 0 var(--cream-50),
+    var(--px) var(--px) 0 var(--cream-50),
+    calc(var(--px) * -1) var(--px) 0 var(--cream-50),
+    var(--px) calc(var(--px) * -1) 0 var(--cream-50),
+    calc(var(--px) * -1) calc(var(--px) * -1) 0 var(--cream-50),
+    0 calc(var(--px) * 2) 0 var(--sakura-300);
 }
 
 .gate__jp {
-  font-weight: 700;
+  font-size: var(--text-md);
   color: var(--sakura-700);
+  text-shadow: 2px 2px 0 var(--cream-50);
 }
 
 .gate__subtitle {
-  font-weight: 700;
-  color: var(--ink-soft);
+  margin-top: var(--space-2);
+  font-family: var(--font-pixel);
+  color: var(--ink);
+  text-shadow: 2px 2px 0 var(--cream-50);
 }
 
 .gate__bottom {
@@ -79,27 +77,33 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-4);
-  animation: pop-in var(--dur-slow) var(--ease-bounce) 200ms both;
+  animation: px-pop-in var(--dur-slow) steps(4) 200ms both;
 }
 
 .gate__enter {
-  min-width: 240px;
+  min-width: 248px;
 }
 
+/* clarão rosa em pixels grandes (pontilhado) que cobre a tela no fim do zoom */
 .gate__flash {
   position: absolute;
   inset: 0;
   z-index: var(--z-flash);
   pointer-events: none;
-  background: radial-gradient(circle at 50% 54%, var(--cream-50) 0, var(--sakura-100) 60%, var(--sakura-200) 100%);
+  background-color: var(--sakura-100);
+  background-image:
+    linear-gradient(45deg, var(--cream-50) 25%, transparent 25%, transparent 75%, var(--cream-50) 75%),
+    linear-gradient(45deg, var(--cream-50) 25%, transparent 25%, transparent 75%, var(--cream-50) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    8px 8px;
   opacity: 0;
-  transition: opacity 0.5s ease-in 0.8s;
+  transition: opacity 0.48s steps(4) 0.8s;
 }
 
-/* Travessia: a câmera "entra" pelo vão do torii e a tela clareia. */
 .gate--entering .gate__scene {
-  transform: scale(3.4);
-  filter: blur(1px);
+  transform: scale(4);
 }
 
 .gate--entering .gate__ui {
@@ -116,28 +120,38 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  /* céu em faixas + chão de ladrilhos em xadrez suave */
   background:
-    linear-gradient(to bottom, var(--sakura-100) 0, var(--cream-50) 260px),
-    var(--cream-50);
-  animation: courtyard-in var(--dur-slow) ease-out;
+    linear-gradient(
+      to bottom,
+      var(--sakura-200) 0 48px,
+      var(--sakura-100) 48px 112px,
+      #ffecee 112px 176px,
+      var(--cream-50) 176px
+    );
+  animation: courtyard-in var(--dur-slow) steps(4);
 }
 
-/* Chão de pedrisco do pátio */
 .courtyard::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 30%;
-  background: linear-gradient(to bottom, transparent, var(--sage-100));
-  z-index: -1;
+  height: 35%;
+  z-index: 0;
+  background-color: var(--sage-100);
+  background-image:
+    linear-gradient(45deg, var(--sage-200) 25%, transparent 25%, transparent 75%, var(--sage-200) 75%),
+    linear-gradient(45deg, var(--sage-200) 25%, transparent 25%, transparent 75%, var(--sage-200) 75%);
+  background-size: 32px 32px;
+  background-position:
+    0 0,
+    16px 16px;
+  box-shadow: 0 calc(var(--px) * -1) 0 0 var(--sage-300);
 }
 
 @keyframes courtyard-in {
   from {
     opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
@@ -163,6 +177,7 @@
 
 .courtyard__header h1 {
   font-size: var(--text-xl);
+  text-shadow: 0 var(--px) 0 var(--cream-50);
 }
 
 .courtyard__nav {
@@ -172,9 +187,9 @@
 .ema-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-5);
+  gap: var(--space-6);
   margin: 0;
-  padding: 0;
+  padding: var(--space-4) var(--space-2) 0;
   list-style: none;
 }
 
@@ -185,16 +200,18 @@
 }
 
 .ema-grid > li {
-  animation: pop-in var(--dur-slow) var(--ease-bounce) both;
+  animation: px-pop-in var(--dur-slow) steps(4) both;
 }
 
-/* Ema: plaquinha de madeira em formato de casinha, pendurada por um cordão.
-   O formato (clip-path) fica nos pseudo-elementos, não no link: assim o
-   contorno de foco do link é desenhado inteiro, por fora da plaquinha. */
+/* Ema: plaquinha de madeira pendurada por um nó de cordão vermelho.
+   Moldura feita com box-shadow (.px-box): o anel de foco aparece inteiro. */
 .ema {
-  --ema-shape: polygon(0 16%, 50% 0, 100% 16%, 100% 100%, 0 100%);
+  --fill: var(--px-wood);
+  --frame: var(--px-wood-deep);
+  --shade: var(--px-wood-dark);
+  --bevel-light: rgba(255, 255, 255, 0.45);
+  --bevel-dark: rgba(142, 102, 56, 0.25);
   position: relative;
-  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -203,86 +220,58 @@
   padding: var(--space-6) var(--space-4) var(--space-5);
   text-align: center;
   text-decoration: none;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  transition: transform var(--dur-med) var(--ease-bounce);
-  transform-origin: 50% 0;
+  /* veios da madeira: linhas horizontais de 1 pixel */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 20px,
+    rgba(199, 154, 91, 0.25) 20px 24px
+  );
 }
 
-/* face de madeira */
-.ema::before,
-.ema::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  clip-path: var(--ema-shape);
-  border-radius: inherit;
-}
-
-.ema::before {
-  z-index: -1;
-  background: linear-gradient(170deg, #f3dcb0 0%, var(--wood) 55%, #e2c08a 100%);
-}
-
-/* base sólida (o "pop" de minijogo) */
-.ema::after {
-  z-index: -2;
-  transform: translateY(5px);
-  background: var(--wood-dark);
-}
-
+/* passar o dedo/mouse ou focar: a plaquinha sobe 1 pixel, em um quadro */
 .ema:hover,
 .ema:focus-visible {
-  transform: rotate(-2deg) translateY(-3px);
+  transform: translateY(calc(var(--px) * -1));
+  --fill: #f2dcb0;
 }
 
 .ema:active {
-  transform: rotate(1deg) translateY(2px);
+  transform: translateY(var(--px));
+  --shade: transparent;
 }
 
-/* Anel de foco duplo (creme + rosa escuro): visível sobre a madeira e sobre o fundo creme. */
+/* anel de foco duplo, por fora da moldura e da sombra */
 .ema:focus-visible {
-  outline: 4px solid var(--sakura-700);
-  outline-offset: 6px;
-  box-shadow: 0 0 0 6px var(--cream-50);
+  outline: var(--px) solid var(--sakura-700);
+  outline-offset: calc(var(--px) * 3);
 }
 
-.ema__hole {
+.ema__knot {
   position: absolute;
-  top: 10%;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--wood-dark);
-  box-shadow: 0 0 0 3px var(--torii);
+  top: calc(var(--px) * -5);
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 0;
 }
 
 .ema__icon {
-  width: 56px;
-  height: 56px;
-  margin-top: var(--space-2);
-}
-
-.ema__icon svg {
-  width: 100%;
-  height: 100%;
+  line-height: 0;
 }
 
 .ema__jp {
   font-size: var(--text-xs);
-  font-weight: 700;
-  color: var(--torii-dark);
+  color: var(--px-torii-dark);
 }
 
 .ema__name {
-  font-family: var(--font-display);
-  font-weight: 900;
+  font-family: var(--font-pixel);
   font-size: var(--text-lg);
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .ema__tagline {
   font-size: var(--text-sm);
-  color: var(--ink);
+  font-weight: 700;
 }
 
 .courtyard__footer {
@@ -290,7 +279,7 @@
   z-index: var(--z-ui);
   padding: var(--space-4);
   text-align: center;
+  font-family: var(--font-pixel);
   font-size: var(--text-xs);
-  font-weight: 700;
   color: var(--ink-soft);
 }

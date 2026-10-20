@@ -31,3 +31,6 @@ afterEach(() => {
   window.location.hash = ''
   reducedMotion = false
 })
+
+// jsdom não tem canvas: o cenário simplesmente não é desenhado nos testes.
+HTMLCanvasElement.prototype.getContext = (() => null) as unknown as typeof HTMLCanvasElement.prototype.getContext
