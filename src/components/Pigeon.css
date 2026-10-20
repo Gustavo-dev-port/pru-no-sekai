@@ -25,3 +25,7 @@
     transform: translateY(0);
   }
 }
+
+.pixel-sprite--flip {
+  transform: scaleX(-1);
+}

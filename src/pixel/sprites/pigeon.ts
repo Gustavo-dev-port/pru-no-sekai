@@ -128,3 +128,25 @@ export const BAG_MAIL: PigeonAccessory = {
     '....kkkkkk..............',
   ],
 }
+
+/** Olhinhos felizes (^) enquanto bica: substitui o olho aberto. */
+export const PIGEON_HAPPY_EYES = [
+  '........................',
+  '........................',
+  '........................',
+  '........................',
+  '....GeeG................',
+  '....eGGe................',
+] as const
+
+/* ---------- Variações de cor dos pombos comuns ----------
+   Trocam só as cores das penas (g/G/h/d e o pescoço n/p). O desenho é o
+   mesmo pombo base, então todos continuam "do mesmo jogo". */
+export type PigeonVariant = 'classico' | 'shiro' | 'canela' | 'sumi'
+
+export const PIGEON_VARIANTS: Record<PigeonVariant, Record<string, string> | undefined> = {
+  classico: undefined,
+  shiro: { g: '#ffffff', G: '#f1edf5', h: '#ddd6e6', d: '#b9afc8', n: '#bfe0d3', p: '#d6c8ec' },
+  canela: { g: '#f6e8da', G: '#dcbc9c', h: '#c69c77', d: '#8e6638' },
+  sumi: { g: '#cdc6d8', G: '#8a819b', h: '#6d6584', d: '#4c4562' },
+}
