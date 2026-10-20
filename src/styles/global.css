@@ -1,0 +1,210 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--cream-50);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+svg {
+  display: block;
+}
+
+:focus-visible {
+  outline: 3px solid var(--sakura-700);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.jp {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  padding: var(--space-3) var(--space-5);
+  border: var(--border-chunky);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--text-md);
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--cream-50);
+  color: var(--ink);
+  box-shadow: var(--shadow-pop);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: var(--shadow-pressed);
+}
+
+.btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.btn--primary {
+  background: var(--sakura-700);
+  color: var(--on-accent);
+}
+
+.btn--ghost {
+  background: transparent;
+  box-shadow: none;
+  border-style: dashed;
+  min-height: 44px;
+  font-size: var(--text-sm);
+}
+
+/* ---------- Selos ---------- */
+.badge {
+  display: inline-block;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  border: 2px solid currentColor;
+}
+
+.badge--wip {
+  color: var(--sakura-700);
+  background: var(--sakura-50);
+}
+
+.badge--done {
+  color: var(--sage-700);
+  background: var(--sage-100);
+}
+
+.eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sakura-700);
+}
+
+/* ---------- Animações compartilhadas ---------- */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-8deg) scale(1.06);
+  }
+  60% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes head-bob {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3px) translateY(1px);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+/* Movimento reduzido: corta toda animação/transição decorativa. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

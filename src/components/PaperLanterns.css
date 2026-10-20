@@ -1,0 +1,28 @@
+.lanterns {
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 var(--space-4);
+  height: 84px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.lanterns__rope {
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: 14px;
+}
+
+.lanterns__item {
+  width: 34px;
+  height: auto;
+  margin-top: 4px;
+  transform-origin: 50% 0;
+  animation: sway 3.2s ease-in-out infinite;
+}
+
+.lanterns__item:nth-child(even) {
+  margin-top: 9px;
+}

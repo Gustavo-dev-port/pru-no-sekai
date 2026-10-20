@@ -1,0 +1,95 @@
+.wip-page {
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 20% 0%, var(--sakura-100) 0, transparent 45%),
+    radial-gradient(circle at 100% 100%, var(--sage-100) 0, transparent 50%),
+    var(--cream-50);
+  padding-bottom: 104px; /* espaço da barra inferior */
+}
+
+.wip-page__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-5);
+}
+
+.wip-page__header {
+  text-align: center;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.wip-page__header h1 {
+  font-size: var(--text-xl);
+}
+
+.wip-page__tagline {
+  color: var(--ink-soft);
+}
+
+.wip-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  background: var(--cream-50);
+  border: var(--border-chunky);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  animation: pop-in var(--dur-slow) var(--ease-bounce);
+}
+
+.wip-card__pigeon {
+  width: 120px;
+}
+
+.wip-card__line {
+  text-align: center;
+  font-weight: 700;
+}
+
+.wip-card__title {
+  align-self: flex-start;
+  font-size: var(--text-md);
+  margin-top: var(--space-2);
+}
+
+.wip-card__list {
+  align-self: stretch;
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.wip-card__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.wip-card__check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px dashed var(--ink-soft);
+  border-radius: 6px;
+  font-weight: 900;
+  color: var(--sage-700);
+}
+
+.is-done .wip-card__check {
+  border-style: solid;
+  border-color: var(--sage-700);
+  background: var(--sage-100);
+}

@@ -1,0 +1,14 @@
+.pigeon {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.pigeon__head {
+  transform-box: fill-box;
+  transform-origin: 70% 90%;
+}
+
+.pigeon--bobbing .pigeon__head {
+  animation: head-bob 1.4s ease-in-out infinite;
+}

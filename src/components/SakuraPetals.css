@@ -1,0 +1,39 @@
+.petals {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: var(--z-petals);
+}
+
+.petals__petal {
+  position: absolute;
+  top: -24px;
+  left: var(--x);
+  width: var(--size);
+  height: calc(var(--size) * 0.7);
+  background: var(--sakura-300);
+  border-radius: 100% 0 100% 0;
+  opacity: 0.85;
+  animation: petal-fall var(--dur) linear var(--delay) infinite;
+  will-change: transform;
+}
+
+.petals__petal:nth-child(3n) {
+  background: var(--sakura-200);
+}
+
+@keyframes petal-fall {
+  from {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate(var(--drift), 110vh) rotate(540deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .petals {
+    display: none;
+  }
+}

@@ -1,0 +1,92 @@
+/* Pru no Sekai — design tokens.
+   Toda cor, raio, sombra e duração da interface sai daqui. */
+:root {
+  /* Sakura (rosa) */
+  --sakura-50: #fff5f8;
+  --sakura-100: #ffe4ec;
+  --sakura-200: #ffc9d9;
+  --sakura-300: #ffa3bf;
+  --sakura-500: #f06f97;
+  --sakura-700: #b03c63; /* texto/ação sobre fundo claro (contraste AA) */
+
+  /* Creme */
+  --cream-50: #fffbf3;
+  --cream-100: #fdf3e1;
+  --cream-200: #f6e6c8;
+  --cream-300: #ead3a8;
+
+  /* Sálvia (verde) */
+  --sage-100: #e5eedf;
+  --sage-300: #b9cfae;
+  --sage-500: #86a878;
+  --sage-700: #4f6b45;
+
+  /* Santuário */
+  --torii: #e0533d;
+  --torii-dark: #a8352a;
+  --lacquer: #3a3036;
+  --gold: #e8c46a;
+  --wood: #ecd2a0;
+  --wood-dark: #c79a5b;
+  --lantern-glow: #ffd98a;
+
+  /* Pombo */
+  --pigeon-100: #ebe8f1;
+  --pigeon-300: #b9b3c6;
+  --pigeon-400: #a49db3;
+  --pigeon-500: #8a829b;
+  --pigeon-700: #5e5670;
+  --neck-green: #6cb59b;
+  --neck-purple: #9b7fc1;
+  --pigeon-eye: #f28c38;
+  --pigeon-feet: #ec8fa6;
+
+  /* Texto */
+  --ink: #4a3b42;
+  --ink-soft: #6e5c65;
+  --on-accent: #ffffff;
+
+  /* Tipografia */
+  --font-display: "Zen Maru Gothic", ui-rounded, "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --font-body: "Zen Maru Gothic", ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.375rem;
+  --text-xl: clamp(1.75rem, 6vw, 2.5rem);
+  --text-hero: clamp(2.25rem, 9vw, 3.75rem);
+
+  /* Espaçamento (escala de 4px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Formas */
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+  --border-chunky: 3px solid var(--ink);
+
+  /* Sombras "de minijogo": base sólida + difusa */
+  --shadow-pop: 0 5px 0 rgba(74, 59, 66, 0.18), 0 12px 24px rgba(74, 59, 66, 0.12);
+  --shadow-pressed: 0 1px 0 rgba(74, 59, 66, 0.18), 0 4px 10px rgba(74, 59, 66, 0.1);
+
+  /* Movimento */
+  --dur-fast: 150ms;
+  --dur-med: 300ms;
+  --dur-slow: 700ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Camadas */
+  --z-scene: 0;
+  --z-petals: 1;
+  --z-ui: 2;
+  --z-nav: 10;
+  --z-flash: 20;
+}

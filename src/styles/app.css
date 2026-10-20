@@ -1,0 +1,13 @@
+.app-loading {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.app-loading__pigeon {
+  width: 96px;
+}

@@ -1,0 +1,271 @@
+/* ================= Portão ================= */
+.gate {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.gate__scene {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scene);
+  transform-origin: 50% 54%; /* vão do torii */
+  transition:
+    transform 1.3s cubic-bezier(0.6, 0, 0.4, 1),
+    filter 1.3s ease-in;
+}
+
+.garden {
+  width: 100%;
+  height: 100%;
+}
+
+.garden__lantern-light {
+  animation: flicker 2.4s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.gate__ui {
+  position: relative;
+  z-index: var(--z-ui);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-5);
+  padding: max(var(--space-5), env(safe-area-inset-top)) var(--space-4)
+    max(var(--space-5), env(safe-area-inset-bottom));
+  transition: opacity 0.4s ease-out;
+}
+
+.gate__title {
+  text-align: center;
+  animation: pop-in var(--dur-slow) var(--ease-bounce) both;
+}
+
+.gate__title h1 {
+  font-size: var(--text-hero);
+  color: var(--ink);
+  text-shadow:
+    3px 3px 0 var(--cream-50),
+    -2px -2px 0 var(--cream-50),
+    2px -2px 0 var(--cream-50),
+    -2px 2px 0 var(--cream-50);
+}
+
+.gate__jp {
+  font-weight: 700;
+  color: var(--sakura-700);
+}
+
+.gate__subtitle {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.gate__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  animation: pop-in var(--dur-slow) var(--ease-bounce) 200ms both;
+}
+
+.gate__enter {
+  min-width: 240px;
+}
+
+.gate__flash {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-flash);
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 54%, var(--cream-50) 0, var(--sakura-100) 60%, var(--sakura-200) 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease-in 0.8s;
+}
+
+/* Travessia: a câmera "entra" pelo vão do torii e a tela clareia. */
+.gate--entering .gate__scene {
+  transform: scale(3.4);
+  filter: blur(1px);
+}
+
+.gate--entering .gate__ui {
+  opacity: 0;
+}
+
+.gate--entering .gate__flash {
+  opacity: 1;
+}
+
+/* ================= Pátio ================= */
+.courtyard {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(to bottom, var(--sakura-100) 0, var(--cream-50) 260px),
+    var(--cream-50);
+  animation: courtyard-in var(--dur-slow) ease-out;
+}
+
+/* Chão de pedrisco do pátio */
+.courtyard::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--sage-100));
+  z-index: -1;
+}
+
+@keyframes courtyard-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.courtyard__main {
+  position: relative;
+  z-index: var(--z-ui);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4) var(--space-6);
+}
+
+.courtyard__header {
+  text-align: center;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.courtyard__header h1 {
+  font-size: var(--text-xl);
+}
+
+.courtyard__nav {
+  width: 100%;
+}
+
+.ema-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 720px) {
+  .ema-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ema-grid > li {
+  animation: pop-in var(--dur-slow) var(--ease-bounce) both;
+}
+
+/* Ema: plaquinha de madeira em formato de casinha, pendurada por um cordão */
+.ema {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  height: 100%;
+  padding: var(--space-6) var(--space-4) var(--space-5);
+  text-align: center;
+  text-decoration: none;
+  background: linear-gradient(170deg, #f3dcb0 0%, var(--wood) 55%, #e2c08a 100%);
+  clip-path: polygon(0 16%, 50% 0, 100% 16%, 100% 100%, 0 100%);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  filter: drop-shadow(0 5px 0 var(--wood-dark));
+  transition: transform var(--dur-med) var(--ease-bounce);
+  transform-origin: 50% 0;
+}
+
+.ema:hover {
+  transform: rotate(-2deg) translateY(-3px);
+}
+
+.ema:active {
+  transform: rotate(1deg) translateY(2px);
+}
+
+/* clip-path cortaria o outline do foco; usa um contorno interno */
+.ema:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 4px var(--sakura-700);
+}
+
+.ema__hole {
+  position: absolute;
+  top: 10%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--wood-dark);
+  box-shadow: 0 0 0 3px var(--torii);
+}
+
+.ema__icon {
+  width: 56px;
+  height: 56px;
+  margin-top: var(--space-2);
+}
+
+.ema__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ema__jp {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--torii-dark);
+}
+
+.ema__name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--text-lg);
+  line-height: 1.2;
+}
+
+.ema__tagline {
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.courtyard__footer {
+  position: relative;
+  z-index: var(--z-ui);
+  padding: var(--space-4);
+  text-align: center;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
