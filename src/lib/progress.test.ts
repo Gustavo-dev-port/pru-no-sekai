@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { getProgress, markOpened, markSeen, recordPoke, recordVisit, resetProgress } from './progress'
+import { flushSaves } from './save'
 
 const stored = () => JSON.parse(localStorage.getItem('pru:save') ?? 'null')?.mail
 
@@ -8,13 +9,15 @@ describe('progresso do álbum (só no aparelho)', () => {
     expect(getProgress()).toEqual({ opened: [], seen: [], pokes: 0, visited: [] })
   })
 
-  it('registra e guarda no localStorage', () => {
+  it('registra e guarda no localStorage', async () => {
     recordPoke()
     recordPoke()
     recordVisit('oraculo')
     markOpened(1)
     markSeen([1, 2])
     expect(getProgress()).toEqual({ opened: [1], seen: [1, 2], pokes: 2, visited: ['oraculo'] })
+    // a gravação passa pelo Web Lock (assíncrona): espera terminar e confere o armazenamento
+    await flushSaves()
     expect(stored()).toEqual(getProgress())
   })
 

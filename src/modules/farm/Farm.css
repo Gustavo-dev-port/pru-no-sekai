@@ -24,6 +24,16 @@
   font-size: var(--text-xl);
 }
 
+/* aviso de save de versão mais nova (somente leitura) */
+.farm__readonly {
+  --fill: #fff3c4;
+  --frame: #a67c1a;
+  width: calc(100% - var(--px) * 2);
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
 /* ---------- Diálogo do Pombo-sama (mesma linguagem do Módulo 3) ---------- */
 .farm__dialog {
   position: relative;

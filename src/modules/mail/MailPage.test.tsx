@@ -120,6 +120,6 @@ describe('Correio Pombo do Amor', () => {
   it('o progresso fica salvo no aparelho', async () => {
     const user = await setup()
     await user.click(card('Entrega especial'))
-    expect(JSON.parse(localStorage.getItem('pru:save')!).mail.opened).toEqual([1])
+    await waitFor(() => expect(JSON.parse(localStorage.getItem('pru:save')!).mail.opened).toEqual([1]))
   })
 })

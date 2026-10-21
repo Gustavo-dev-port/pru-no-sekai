@@ -112,41 +112,124 @@ export function claimFreePouch(state: EconomyState, now: number): FarmResult {
   return { ok: true, state: { ...state, seeds, lastFreePouchAt: now } }
 }
 
-/* ---------- Dados salvos ---------- */
+/* ---------- Recuperação de dados salvos (AUD-007-03) ----------
+   Política documentada, campo a campo. Princípios:
+   1. O que é válido é mantido (inclusive zero escrito de propósito).
+   2. Ausente ≠ zero: os dois viram um valor seguro, mas o ausente é
+      registrado no relatório como "ausente" e o inválido como "inválido".
+   3. Nunca cria recurso do nada: quantidade sem valor confiável vira 0.
+      A única "devolução" é a semente de plantas que não cabem mais nos
+      canteiros (a semente já tinha sido gasta para plantar).
+   4. Se a recuperação deixar a jogadora sem sementes e sem plantas, o
+      saquinho grátis fica disponível na hora (ninguém fica travado).
+   5. Nunca lança erro.
 
-const count = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.floor(v) : 0)
+   | Campo                  | Válido                    | Ausente                 | Inválido (negativo, NaN, texto…) |
+   |------------------------|---------------------------|-------------------------|----------------------------------|
+   | sementes/alimentos     | inteiro ≥ 0 (fração: piso) | 0                       | 0                                |
+   | canteiro               | null ou {planta, data}    | vazio                   | vazio (planta desconhecida)      |
+   | data de plantio        | número ≤ agora            | agora (planta mantida)  | agora (planta mantida)           |
+   | data no futuro         | —                         | —                       | agora                            |
+   | canteiros além do 4º   | —                         | —                       | removidos, +1 semente devolvida  |
+   | último saquinho        | null ou número ≤ agora    | agora (espera o tempo)  | agora                            |
+   | tutorial visto         | true/false                | deduzido do progresso   | deduzido do progresso            |
+*/
 
-/**
- * Confere e conserta dados lidos do armazenamento (podem estar velhos,
- * incompletos ou editados à mão). Nunca lança erro.
- */
-export function sanitizeEconomy(raw: unknown, now: number): EconomyState {
-  const base = initialEconomy()
-  if (!raw || typeof raw !== 'object') return base
+export interface EconomyRecovery {
+  state: EconomyState
+  /** O que precisou ser consertado (vazio = dados íntegros). */
+  issues: string[]
+}
+
+const isValidCount = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0
+
+export function recoverEconomy(raw: unknown, now: number): EconomyRecovery {
+  const issues: string[] = []
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return { state: initialEconomy(), issues: ['economia ausente ou inválida: estado inicial'] }
+  }
   const data = raw as Partial<Record<keyof EconomyState, unknown>>
 
-  const cropRecord = (v: unknown, fallback: Record<CropId, number>) => {
-    if (!v || typeof v !== 'object') return { ...fallback }
-    const rec = v as Record<string, unknown>
+  const counts = (field: 'seeds' | 'food') => {
     const out = zeroCrops()
-    for (const crop of CROP_ORDER) out[crop] = count(rec[crop])
+    const v = data[field]
+    if (!v || typeof v !== 'object' || Array.isArray(v)) {
+      issues.push(`${field}: ${v === undefined ? 'ausente' : 'inválido'} → 0`)
+      return out
+    }
+    const rec = v as Record<string, unknown>
+    for (const crop of CROP_ORDER) {
+      const value = rec[crop]
+      if (isValidCount(value)) {
+        out[crop] = Math.floor(value)
+        if (!Number.isInteger(value)) issues.push(`${field}.${crop}: fração → ${out[crop]}`)
+      } else {
+        issues.push(`${field}.${crop}: ${value === undefined ? 'ausente' : 'inválido'} → 0`)
+      }
+    }
     return out
   }
 
-  const plots = Array.from({ length: PLOT_COUNT }, (_, i): Plot | null => {
-    const p = Array.isArray(data.plots) ? (data.plots[i] as Partial<Plot> | null) : null
-    if (!p || typeof p !== 'object' || !(p.crop && p.crop in CROPS)) return null
-    const plantedAt = typeof p.plantedAt === 'number' && Number.isFinite(p.plantedAt) ? p.plantedAt : now
-    // plantio "no futuro" (relógio adiantado antes): conta a partir de agora
-    return { crop: p.crop, plantedAt: Math.min(plantedAt, now) }
-  })
+  const seeds = counts('seeds')
+  const food = counts('food')
 
-  const last = data.lastFreePouchAt
-  return {
-    seeds: cropRecord(data.seeds, base.seeds),
-    food: cropRecord(data.food, base.food),
-    plots,
-    lastFreePouchAt: typeof last === 'number' && Number.isFinite(last) ? Math.min(last, now) : null,
-    tutorialDone: data.tutorialDone === true,
+  const plots: (Plot | null)[] = Array.from({ length: PLOT_COUNT }, () => null)
+  if (!Array.isArray(data.plots)) {
+    issues.push(`canteiros: ${data.plots === undefined ? 'ausentes' : 'inválidos'} → vazios`)
+  } else {
+    data.plots.forEach((entry: unknown, i: number) => {
+      if (entry === null) return
+      const p = entry as Partial<Plot> | undefined
+      if (!p || typeof p !== 'object' || typeof p.crop !== 'string' || !(p.crop in CROPS)) {
+        if (i < PLOT_COUNT) issues.push(`canteiro ${i + 1}: inválido → vazio`)
+        else issues.push(`canteiro ${i + 1}: inválido, além do limite → removido`)
+        return
+      }
+      const crop = p.crop as CropId
+      if (i >= PLOT_COUNT) {
+        seeds[crop] += 1
+        issues.push(`canteiro ${i + 1}: além do limite → removido, semente de ${crop} devolvida`)
+        return
+      }
+      let plantedAt = now
+      if (typeof p.plantedAt === 'number' && Number.isFinite(p.plantedAt)) {
+        plantedAt = Math.min(p.plantedAt, now)
+        if (p.plantedAt > now) issues.push(`canteiro ${i + 1}: plantio no futuro → agora`)
+      } else {
+        issues.push(`canteiro ${i + 1}: data de plantio ${p.plantedAt === undefined ? 'ausente' : 'inválida'} → agora (planta mantida)`)
+      }
+      plots[i] = { crop, plantedAt }
+    })
   }
+
+  let lastFreePouchAt: number | null
+  const last = data.lastFreePouchAt
+  if (last === null) lastFreePouchAt = null
+  else if (typeof last === 'number' && Number.isFinite(last)) lastFreePouchAt = Math.min(last, now)
+  else {
+    lastFreePouchAt = now
+    issues.push(`último saquinho: ${last === undefined ? 'ausente' : 'inválido'} → agora`)
+  }
+
+  let tutorialDone: boolean
+  if (typeof data.tutorialDone === 'boolean') tutorialDone = data.tutorialDone
+  else {
+    const played = plots.some(Boolean) || CROP_ORDER.some((c) => food[c] > 0) || lastFreePouchAt !== null
+    tutorialDone = played
+    issues.push(`tutorial: ${data.tutorialDone === undefined ? 'ausente' : 'inválido'} → ${played ? 'visto' : 'não visto'}`)
+  }
+
+  // ninguém fica travado por causa de uma recuperação
+  const noSeeds = CROP_ORDER.every((c) => seeds[c] === 0)
+  if (issues.length > 0 && noSeeds && !plots.some(Boolean) && lastFreePouchAt !== null) {
+    lastFreePouchAt = null
+    issues.push('sem sementes e sem plantas após a recuperação → saquinho grátis liberado')
+  }
+
+  return { state: { seeds, food, plots, lastFreePouchAt, tutorialDone }, issues }
+}
+
+/** Atalho: só o estado recuperado. */
+export function sanitizeEconomy(raw: unknown, now: number): EconomyState {
+  return recoverEconomy(raw, now).state
 }
