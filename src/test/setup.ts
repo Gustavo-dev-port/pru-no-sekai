@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 import { reloadSaveForTests } from '../lib/save'
+import { createFakeLockManager } from './fakeLocks'
 
 // jsdom não implementa matchMedia nem scrollTo.
 let reducedMotion = false
@@ -24,13 +25,18 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 })
 
+// jsdom não tem Web Locks: usa um LockManager de teste (o mesmo para todas as "abas")
+Object.defineProperty(navigator, 'locks', { configurable: true, value: createFakeLockManager() })
+reloadSaveForTests({ locks: navigator.locks })
+
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
 
 afterEach(() => {
   cleanup()
   sessionStorage.clear()
   localStorage.clear()
-  reloadSaveForTests()
+  // cada teste começa com um navegador "novo": armazenamento vazio e Web Locks
+  reloadSaveForTests({ locks: createFakeLockManager() })
   window.location.hash = ''
   reducedMotion = false
 })

@@ -1,5 +1,5 @@
 import { CROPS, type CropId } from '../../data/crops'
-import type { FarmError } from '../../economy/farm'
+import type { EconomyError } from '../../economy/store'
 
 /** "45 s", "2 min", "1 min 05 s". */
 export function formatDuration(ms: number): string {
@@ -11,7 +11,7 @@ export function formatDuration(ms: number): string {
 }
 
 /** Mensagem amigável para cada erro das regras da fazenda. */
-export function farmErrorMessage(error: FarmError, crop: CropId, waitMs = 0): string {
+export function farmErrorMessage(error: EconomyError, crop: CropId, waitMs = 0): string {
   const name = CROPS[crop].name.toLowerCase()
   switch (error) {
     case 'sem-sementes':
@@ -26,5 +26,14 @@ export function farmErrorMessage(error: FarmError, crop: CropId, waitMs = 0): st
       return 'Esse canteiro está vazio.'
     case 'canteiro-invalido':
       return 'Esse canteiro não existe.'
+    // proteção do save (nada foi alterado em nenhum destes casos)
+    case 'save-incompativel':
+      return 'Seu progresso foi salvo por uma versão mais nova do site. Para não estragar nada, a fazendinha está só para olhar.'
+    case 'sem-protecao':
+      return 'Este navegador não consegue proteger a fazendinha entre abas, então nada foi alterado. Tente atualizar o navegador.'
+    case 'ocupado':
+      return 'A fazendinha está ocupada em outra aba. Tente de novo em instantes.'
+    case 'falha-ao-salvar':
+      return 'Não deu para salvar agora (o armazenamento pode estar cheio). Nada foi alterado.'
   }
 }

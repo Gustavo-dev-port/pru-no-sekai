@@ -4,8 +4,9 @@ import { PixelCanvas } from '../../components/PixelCanvas'
 import { CROP_ORDER, CROPS, FREE_POUCH, type CropId } from '../../data/crops'
 import { getModule } from '../../data/modules'
 import { growthOf, pouchReadyIn } from '../../economy/farm'
-import { finishTutorial, harvestAt, plantAt, takeFreePouch, useEconomy } from '../../economy/store'
+import { finishTutorial, getEconomy, harvestAt, plantAt, takeFreePouch, useEconomy } from '../../economy/store'
 import { useFocusOnMount } from '../../hooks/useFocusOnMount'
+import { useSaveStatus } from '../../lib/save'
 import { farmErrorMessage, formatDuration } from './farmText'
 import { drawFarm } from '../../pixel/farmScene'
 import { PixelSprite } from '../../pixel/PixelSprite'
@@ -51,6 +52,10 @@ export default function FarmPage() {
   const popId = useRef(0)
   const timers = useRef(new Set<number>())
   const readyBefore = useRef<Set<number> | null>(null)
+  // uma ação de cada vez nesta aba (as outras abas esperam pelo Web Lock)
+  const busy = useRef(false)
+  const [working, setWorking] = useState(false)
+  const readOnly = useSaveStatus() === 'future-version'
 
   useEffect(() => {
     const pending = timers.current
@@ -85,31 +90,49 @@ export default function FarmPage() {
     timers.current.add(t)
   }
 
-  const onPlot = (index: number) => {
-    const plot = economy.plots[index]
-    if (!plot) {
-      const result = plantAt(index, selected)
-      if (!result.ok) return say(farmErrorMessage(result.error, selected))
-      const crop = CROPS[selected]
-      return say(`Plantou ${crop.name.toLowerCase()} no canteiro ${index + 1}. Fica pronto em ${formatDuration(crop.growMs)}.`)
+  /** Roda uma ação econômica; toques durante a espera são ignorados. */
+  const guarded = async (work: () => Promise<void>) => {
+    if (busy.current) return
+    busy.current = true
+    setWorking(true)
+    try {
+      await work()
+    } finally {
+      busy.current = false
+      setWorking(false)
     }
-    const result = harvestAt(index)
-    const crop = CROPS[plot.crop]
-    if (!result.ok) {
-      const growth = growthOf(plot, Date.now())
-      return say(farmErrorMessage(result.error, plot.crop, growth.remainingMs))
-    }
-    pop(index, `+${crop.yield}`)
-    say(`Colheu ${crop.yield} de ${crop.foodName}! A plantinha devolveu 1 semente de ${crop.name.toLowerCase()}.`)
   }
 
+  const onPlot = (index: number) =>
+    guarded(async () => {
+      if (!economy.plots[index]) {
+        const result = await plantAt(index, selected)
+        if (!result.ok) return say(farmErrorMessage(result.error, selected))
+        const crop = CROPS[selected]
+        return say(`Plantou ${crop.name.toLowerCase()} no canteiro ${index + 1}. Fica pronto em ${formatDuration(crop.growMs)}.`)
+      }
+      const result = await harvestAt(index)
+      if (!result.ok) {
+        // o estado mais recente diz o que há no canteiro agora
+        const current = getEconomy().plots[index]
+        const crop = current?.crop ?? economy.plots[index]?.crop ?? selected
+        const wait = current ? growthOf(current, Date.now()).remainingMs : 0
+        return say(farmErrorMessage(result.error, crop, wait))
+      }
+      // o que foi colhido de fato: o canteiro como estava dentro da operação protegida
+      const crop = CROPS[result.before.plots[index]!.crop]
+      pop(index, `+${crop.yield}`)
+      say(`Colheu ${crop.yield} de ${crop.foodName}! A plantinha devolveu 1 semente de ${crop.name.toLowerCase()}.`)
+    })
+
   const pouchWait = pouchReadyIn(economy, now)
-  const onPouch = () => {
-    const result = takeFreePouch()
-    if (!result.ok) return say(farmErrorMessage(result.error, selected, pouchReadyIn(economy, Date.now())))
-    const gifts = CROP_ORDER.map((c) => `+${FREE_POUCH.seeds[c]} ${CROPS[c].name.toLowerCase()}`).join(', ')
-    say(`O Pombo-sama deixou um saquinho de sementes: ${gifts}.`)
-  }
+  const onPouch = () =>
+    guarded(async () => {
+      const result = await takeFreePouch()
+      if (!result.ok) return say(farmErrorMessage(result.error, selected, pouchReadyIn(getEconomy(), Date.now())))
+      const gifts = CROP_ORDER.map((c) => `+${FREE_POUCH.seeds[c]} ${CROPS[c].name.toLowerCase()}`).join(', ')
+      say(`O Pombo-sama deixou um saquinho de sementes: ${gifts}.`)
+    })
 
   const showTutorial = !economy.tutorialDone || helpOpen
   const closeTutorial = () => {
@@ -134,6 +157,13 @@ export default function FarmPage() {
             {mod.name}
           </h1>
         </header>
+
+        {readOnly && (
+          <p className="farm__readonly px-box" role="note">
+            Este progresso foi salvo por uma versão mais nova do Pru no Sekai. Para não estragar nada, a fazendinha está
+            só para olhar por aqui.
+          </p>
+        )}
 
         <div className="farm__dialog px-box">
           <span className="farm__speaker" aria-hidden="true">
@@ -163,7 +193,7 @@ export default function FarmPage() {
         </div>
 
         {/* Canteiros */}
-        <section className="farm-field px-box" aria-label="Canteiros">
+        <section className="farm-field px-box" aria-label="Canteiros" aria-busy={working}>
           <PixelCanvas draw={drawFarm} className="farm-field__scene" />
           <ul className="farm-field__plots">
             {economy.plots.map((plot, i) => (

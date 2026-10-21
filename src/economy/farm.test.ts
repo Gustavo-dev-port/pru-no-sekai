@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CROPS, FREE_POUCH, PLOT_COUNT, SEEDS_RETURNED_ON_HARVEST, STARTING_SEEDS } from '../data/crops'
-import { claimFreePouch, growthOf, harvest, initialEconomy, plant, pouchReadyIn, sanitizeEconomy, type EconomyState } from './farm'
+import { claimFreePouch, growthOf, harvest, initialEconomy, plant, pouchReadyIn, recoverEconomy, type EconomyState } from './farm'
 
 const T0 = 1_700_000_000_000
 const ok = (r: ReturnType<typeof plant>) => {
@@ -117,31 +117,100 @@ describe('saquinho grátis (ninguém fica bloqueado)', () => {
   })
 })
 
-describe('dados salvos', () => {
-  it('conserta valores inválidos sem lançar erro', () => {
-    const s = sanitizeEconomy(
-      {
-        seeds: { milho: -3, arroz: 'muitas', girassol: 2.7, abacaxi: 99 },
-        food: null,
-        plots: [{ crop: 'milho', plantedAt: T0 }, { crop: 'abacaxi', plantedAt: T0 }, 'lixo', { crop: 'arroz' }, { crop: 'milho', plantedAt: T0 }],
-        lastFreePouchAt: 'ontem',
-        tutorialDone: 'sim',
-      },
-      T0 + 1000,
+describe('AUD-007-03 — recuperação de dados salvos', () => {
+  const NOW = T0 + 1000
+  const valid = () => ({
+    seeds: { milho: 2, arroz: 0, girassol: 1 },
+    food: { milho: 10, arroz: 0, girassol: 20 },
+    plots: [{ crop: 'milho', plantedAt: T0 }, null, null, null],
+    lastFreePouchAt: null,
+    tutorialDone: true,
+  })
+
+  it('save íntegro: nada muda e o relatório fica vazio (zeros escritos são mantidos)', () => {
+    const r = recoverEconomy(valid(), NOW)
+    expect(r.issues).toEqual([])
+    expect(r.state).toEqual(valid())
+  })
+
+  it('sementes parcialmente ausentes: mantém as que existem; ausente vira 0 e é relatado como "ausente"', () => {
+    const r = recoverEconomy({ ...valid(), seeds: { milho: 2 } }, NOW)
+    expect(r.state.seeds).toEqual({ milho: 2, arroz: 0, girassol: 0 })
+    expect(r.issues).toContain('seeds.arroz: ausente → 0')
+    expect(r.issues).toContain('seeds.girassol: ausente → 0')
+  })
+
+  it('alimentos parcialmente ausentes: idem, sem inventar estoque', () => {
+    const r = recoverEconomy({ ...valid(), food: { girassol: 20 } }, NOW)
+    expect(r.state.food).toEqual({ milho: 0, arroz: 0, girassol: 20 })
+    expect(r.issues).toContain('food.milho: ausente → 0')
+  })
+
+  it('valores negativos, não finitos e não numéricos são rejeitados (→ 0, "inválido")', () => {
+    const r = recoverEconomy(
+      { ...valid(), seeds: { milho: -3, arroz: Infinity, girassol: '5' }, food: { milho: NaN, arroz: null, girassol: 2.9 } },
+      NOW,
     )
-    expect(s.seeds).toEqual({ milho: 0, arroz: 0, girassol: 2 })
-    expect(s.food).toEqual({ milho: 0, arroz: 0, girassol: 0 })
-    expect(s.plots).toEqual([{ crop: 'milho', plantedAt: T0 }, null, null, { crop: 'arroz', plantedAt: T0 + 1000 }])
-    expect(s.lastFreePouchAt).toBeNull()
-    expect(s.tutorialDone).toBe(false)
+    expect(r.state.seeds).toEqual({ milho: 0, arroz: 0, girassol: 0 })
+    expect(r.state.food).toEqual({ milho: 0, arroz: 0, girassol: 2 })
+    expect(r.issues).toEqual(expect.arrayContaining(['seeds.milho: inválido → 0', 'seeds.girassol: inválido → 0', 'food.girassol: fração → 2']))
   })
 
-  it('plantio salvo "no futuro" (relógio adiantado) passa a contar de agora', () => {
-    const s = sanitizeEconomy({ plots: [{ crop: 'milho', plantedAt: T0 + 9_999_999 }] }, T0)
-    expect(s.plots[0]).toEqual({ crop: 'milho', plantedAt: T0 })
+  it('canteiros inválidos ficam vazios; os válidos são preservados', () => {
+    const r = recoverEconomy({ ...valid(), plots: [{ crop: 'milho', plantedAt: T0 }, { crop: 'abacaxi', plantedAt: T0 }, 'lixo', 42] }, NOW)
+    expect(r.state.plots).toEqual([{ crop: 'milho', plantedAt: T0 }, null, null, null])
+    expect(r.issues).toEqual(expect.arrayContaining(['canteiro 2: inválido → vazio', 'canteiro 3: inválido → vazio']))
   })
 
-  it('lixo total vira o estado inicial', () => {
-    expect(sanitizeEconomy('nada', T0)).toEqual(initialEconomy())
+  it('datas de plantio inválidas: a planta é mantida e volta a crescer de agora', () => {
+    const r = recoverEconomy(
+      { ...valid(), plots: [{ crop: 'arroz' }, { crop: 'milho', plantedAt: 'ontem' }, { crop: 'girassol', plantedAt: NOW + 99_999 }, null] },
+      NOW,
+    )
+    expect(r.state.plots).toEqual([
+      { crop: 'arroz', plantedAt: NOW },
+      { crop: 'milho', plantedAt: NOW },
+      { crop: 'girassol', plantedAt: NOW },
+      null,
+    ])
+    expect(r.issues).toContain('canteiro 1: data de plantio ausente → agora (planta mantida)')
+    expect(r.issues).toContain('canteiro 3: plantio no futuro → agora')
+  })
+
+  it('canteiros além do limite: removidos com a semente devolvida (sem duplicar)', () => {
+    const plots = [null, null, null, null, { crop: 'girassol', plantedAt: T0 }, { crop: 'abacaxi', plantedAt: T0 }]
+    const r = recoverEconomy({ ...valid(), plots }, NOW)
+    expect(r.state.plots).toHaveLength(4)
+    expect(r.state.seeds.girassol).toBe(valid().seeds.girassol + 1)
+  })
+
+  it('objeto incompleto: o que falta é deduzido de forma conservadora', () => {
+    const r = recoverEconomy({ food: { milho: 3, arroz: 0, girassol: 0 } }, NOW)
+    expect(r.state.food.milho).toBe(3) // preservado
+    expect(r.state.plots).toEqual([null, null, null, null])
+    expect(r.state.lastFreePouchAt).toBeNull() // ficou sem sementes e plantas → saquinho liberado
+    expect(r.state.tutorialDone).toBe(true) // já tinha colhido: tutorial visto
+    expect(r.issues).toContain('sem sementes e sem plantas após a recuperação → saquinho grátis liberado')
+  })
+
+  it('último saquinho ausente/inválido: espera o intervalo inteiro (não ganha saquinho de graça)', () => {
+    const r = recoverEconomy({ ...valid(), lastFreePouchAt: 'ontem' }, NOW)
+    expect(r.state.lastFreePouchAt).toBe(NOW)
+    expect(pouchReadyIn(r.state, NOW)).toBe(FREE_POUCH.cooldownMs)
+  })
+
+  it('save totalmente corrompido: estado inicial, sem lançar erro', () => {
+    for (const lixo of ['nada', 42, null, undefined, [], true]) {
+      const r = recoverEconomy(lixo, NOW)
+      expect(r.state).toEqual(initialEconomy())
+      expect(r.issues).toEqual(['economia ausente ou inválida: estado inicial'])
+    }
+  })
+
+  it('recuperação é estável: recuperar de novo não muda nada nem duplica recursos', () => {
+    const once = recoverEconomy({ seeds: { milho: 1 }, plots: [null, null, null, null, { crop: 'milho', plantedAt: T0 }] }, NOW).state
+    const twice = recoverEconomy(once, NOW)
+    expect(twice.state).toEqual(once)
+    expect(twice.issues).toEqual([])
   })
 })
