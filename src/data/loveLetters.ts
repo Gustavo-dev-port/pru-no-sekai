@@ -40,7 +40,7 @@ export const LOVE_LETTERS: LoveLetter[] = [
     rarity: 'rara',
     icon: '⚔️',
     sender: 'Correio dos Pombinhos',
-    body: 'Dizem que os samurais lutavam por honra. Eu lutaria pelo último pedacinho de comida com você. Mas, se você fizesse aquela carinha, provavelmente entregaria. Minha honra é fraca diante da Monstrinha.',
+    body: 'Dizem que os samurais lutavam por honra. Eu lutaria pelo último pedacinho de comida com você. Mas, se você fizesse aquela carinha, provavelmente entregaria. Minha honra é fraca diante da Pombinha.',
   },
   {
     id: 4,
@@ -67,7 +67,7 @@ export const LOVE_LETTERS: LoveLetter[] = [
     rarity: 'rara',
     icon: '👑',
     sender: 'Reino dos Pombos',
-    body: 'Por ordem do Reino dos Pombos, fica decretado que Bruna Sekiya, também conhecida como Pru, Pequena e Monstrinha, receberá quantidades absurdas de carinho, beijinhos e atenção. O decreto é vitalício e não aceita recursos.',
+    body: 'Por ordem do Reino dos Pombos, fica decretado que Bruna Sekiya, também conhecida como Pru, Pequena e Pombinha, receberá quantidades absurdas de carinho, beijinhos e atenção. O decreto é vitalício e não aceita recursos.',
   },
   {
     id: 7,
@@ -103,7 +103,7 @@ export const LOVE_LETTERS: LoveLetter[] = [
     rarity: 'lendaria',
     icon: '❤️',
     sender: 'Rei Pombo',
-    body: 'Pru, eu fiz esse mundinho porque queria te dar uma coisa que fosse só sua. Um lugar cheio de pombos bobos, pequenas surpresas e pedacinhos do carinho que sinto por você. Talvez não seja um presente perfeito, mas cada detalhe existe porque eu amo ter você na minha vida. Eu te amo, Monstrinha. ❤️',
+    body: 'Pru, eu fiz esse mundinho porque queria te dar uma coisa que fosse só sua. Um lugar cheio de pombos bobos, pequenas surpresas e pedacinhos do carinho que sinto por você. Talvez não seja um presente perfeito, mas cada detalhe existe porque eu amo ter você na minha vida. Eu te amo, Pombinha. ❤️',
   },
 ]
 

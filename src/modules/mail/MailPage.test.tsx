@@ -112,7 +112,7 @@ describe('Correio Pombo do Amor', () => {
 
     await user.click(receive)
     const letter = screen.getByRole('dialog', { name: 'A carta mais importante' })
-    expect(letter).toHaveTextContent('Eu te amo, Monstrinha.')
+    expect(letter).toHaveTextContent('Eu te amo, Pombinha.')
     expect(letter).toHaveTextContent(FINAL_LETTER_FOOTER)
     expect(screen.getByTestId('album-count')).toHaveTextContent('10 / 10 cartas encontradas · 10 lidas')
   })
