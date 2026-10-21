@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { getModule, type ModuleId } from './data/modules'
 import { Pigeon } from './components/Pigeon'
+import { recordVisit } from './lib/progress'
 import { useRoute } from './router'
 import SanctuaryPage from './modules/sanctuary/SanctuaryPage'
 
@@ -38,6 +39,8 @@ export default function App() {
 
   useEffect(() => {
     document.title = route === 'santuario' ? 'Pru no Sekai' : `${getModule(route).name} · Pru no Sekai`
+    // visitas contam para cartas do Correio (ex.: "visitar o Oráculo")
+    recordVisit(route)
   }, [route])
 
   return (

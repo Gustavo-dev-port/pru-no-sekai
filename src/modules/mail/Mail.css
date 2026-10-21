@@ -1,0 +1,628 @@
+.mail-page {
+  min-height: 100dvh;
+  background: linear-gradient(to bottom, var(--sakura-100) 0 64px, #ffecee 64px 128px, var(--cream-50) 128px);
+  padding-bottom: 112px; /* barra inferior */
+}
+
+.mail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-5);
+}
+
+.mail__header {
+  display: grid;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.mail__header h1 {
+  font-size: var(--text-xl);
+}
+
+/* ---------- Agência do correio ---------- */
+.post-office {
+  --fill: #fff4ef;
+  position: relative;
+  width: calc(100% - var(--px) * 2);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3) 0;
+  overflow: hidden;
+  /* chão de tábuas embaixo da cena */
+  background:
+    repeating-linear-gradient(to right, var(--px-wood) 0 28px, var(--px-wood-dark) 28px 32px) bottom / 100% 20px no-repeat,
+    linear-gradient(to bottom, var(--sakura-100) 0 40%, #fff4ef 40%);
+}
+
+.post-office__bubble {
+  position: relative;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  background: var(--cream-50);
+  box-shadow:
+    -2px 0 0 0 var(--px-ink),
+    2px 0 0 0 var(--px-ink),
+    0 -2px 0 0 var(--px-ink),
+    0 2px 0 0 var(--px-ink);
+  margin-top: var(--space-2);
+}
+
+.post-office__speaker {
+  position: absolute;
+  top: -12px;
+  left: var(--space-2);
+  padding: 0 var(--space-2);
+  background: #5b7fb8;
+  color: var(--on-accent);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+.post-office__text {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  animation: text-blip 240ms steps(2) both;
+}
+
+.post-office__scene {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-6);
+  min-height: 120px;
+  padding-bottom: 12px;
+}
+
+.post-office__postbox {
+  line-height: 0;
+}
+
+.post-office__carrier {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+/* entrega: o carteiro chega voando da direita, em 6 quadros */
+.post-office__carrier--arriving {
+  animation: carrier-fly-in 720ms steps(6) both;
+}
+
+@keyframes carrier-fly-in {
+  0% {
+    transform: translate(240px, -64px);
+  }
+  70% {
+    transform: translate(12px, -8px);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* ---------- Álbum ---------- */
+.album {
+  width: 100%;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.album__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0 var(--px);
+}
+
+.album__title {
+  font-size: var(--text-lg);
+}
+
+.album__count {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.album__count strong {
+  font-family: var(--font-pixel);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--sakura-700);
+}
+
+/* filtros: fichas pixel; a escolhida fica "afundada" e rosa */
+.album__filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  padding: 0 2px;
+}
+
+/* rótulo em cima, contagem embaixo: as 4 fichas cabem numa linha até em 320px */
+.album__filter {
+  display: grid;
+  justify-items: center;
+  min-height: 48px;
+  padding: var(--space-1) 2px;
+  font-size: 0.875rem;
+  border: 0;
+  background: var(--cream-50);
+  box-shadow:
+    -2px 0 0 0 var(--px-ink),
+    2px 0 0 0 var(--px-ink),
+    0 -2px 0 0 var(--px-ink),
+    0 2px 0 0 var(--px-ink),
+    0 6px 0 0 rgba(74, 59, 66, 0.2);
+  margin: 2px 2px 6px;
+  font-family: var(--font-pixel);
+  cursor: pointer;
+}
+
+.album__filter[aria-pressed="true"] {
+  background: var(--sakura-100);
+  color: var(--sakura-900);
+  transform: translateY(var(--px));
+  box-shadow:
+    -2px 0 0 0 var(--sakura-700),
+    2px 0 0 0 var(--sakura-700),
+    0 -2px 0 0 var(--sakura-700),
+    0 2px 0 0 var(--sakura-700);
+}
+
+.album__filter-count {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.album__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: var(--space-5) var(--space-4);
+  margin: 0;
+  padding: var(--space-2) var(--px) 0;
+  list-style: none;
+}
+
+.album__item {
+  display: flex;
+}
+
+.album__legend {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/* ---------- Carta no álbum ---------- */
+.letter-card {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-2) var(--space-3);
+  text-align: center;
+  font: inherit;
+  color: var(--ink);
+}
+
+button.letter-card {
+  cursor: pointer;
+}
+
+button.letter-card:hover,
+button.letter-card:focus-visible {
+  transform: translateY(calc(var(--px) * -1));
+}
+
+button.letter-card:active {
+  transform: translateY(var(--px));
+  --shade: transparent;
+}
+
+.letter-card:focus-visible {
+  outline: var(--px) solid var(--sakura-700);
+  outline-offset: calc(var(--px) * 3);
+}
+
+/* moldura e papel por raridade */
+.letter-card--rara {
+  --frame: #625393;
+  --fill: #f6f2fc;
+}
+
+.letter-card--lendaria {
+  --frame: #a67c1a;
+  --fill: #fff8e4;
+  --bevel-light: rgba(255, 236, 170, 0.9);
+}
+
+.letter-card--locked {
+  --frame: #a69bab;
+  --fill: #f5f2f6;
+  --shade: rgba(74, 59, 66, 0.1);
+  color: var(--ink-soft);
+}
+
+.letter-card__art {
+  position: relative;
+  line-height: 0;
+}
+
+/* ícone da carta "carimbado" no canto do envelope */
+.letter-card__icon {
+  position: absolute;
+  right: -10px;
+  bottom: -4px;
+  padding: 2px;
+  background: var(--cream-50);
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+.letter-card__lock {
+  position: absolute;
+  inset: 20px 0 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-pixel);
+  font-size: var(--text-lg);
+  color: var(--cream-50);
+  text-shadow:
+    2px 0 0 #8a7f8f,
+    -2px 0 0 #8a7f8f,
+    0 2px 0 #8a7f8f,
+    0 -2px 0 #8a7f8f;
+}
+
+.letter-card__title {
+  font-family: var(--font-pixel);
+  font-size: var(--text-sm);
+  line-height: 1.3;
+}
+
+.letter-card__hint {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.letter-card__action {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  color: var(--sakura-700);
+}
+
+.letter-card--opened .letter-card__action {
+  color: var(--ink-soft);
+}
+
+/* "Nova!": selinho que pisca em quadros */
+.letter-card__new {
+  position: absolute;
+  top: calc(var(--px) * -4);
+  right: var(--space-2);
+  z-index: 1;
+  padding: 0 var(--space-2);
+  background: var(--sakura-700);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 2px var(--sakura-900);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  animation: new-blink 900ms steps(1) 4;
+}
+
+@keyframes new-blink {
+  50% {
+    transform: translateY(calc(var(--px) * -1));
+  }
+}
+
+.letter-card--new {
+  animation: px-pop-in var(--dur-slow) steps(4) both;
+}
+
+/* lendárias brilham: dois pixels dourados nos cantos */
+.letter-card--lendaria:not(.letter-card--locked)::before,
+.letter-card--lendaria:not(.letter-card--locked)::after {
+  content: "";
+  position: absolute;
+  width: var(--px);
+  height: var(--px);
+  background: var(--px-gold);
+  box-shadow:
+    var(--px) 0 0 0 #fff3c4,
+    calc(var(--px) * -1) 0 0 0 #fff3c4,
+    0 var(--px) 0 0 #fff3c4,
+    0 calc(var(--px) * -1) 0 0 #fff3c4;
+  animation: sparkle 1.2s steps(1) infinite;
+}
+
+.letter-card--lendaria::before {
+  top: 10px;
+  left: 10px;
+}
+
+.letter-card--lendaria::after {
+  bottom: 14px;
+  right: 10px;
+  animation-delay: -0.6s;
+}
+
+@keyframes sparkle {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Selos de raridade ---------- */
+.rarity-seal {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  box-shadow:
+    -2px 0 0 0 currentColor,
+    2px 0 0 0 currentColor,
+    0 -2px 0 0 currentColor,
+    0 2px 0 0 currentColor;
+  margin: 2px;
+}
+
+.rarity-seal--comum {
+  color: var(--sakura-700);
+  background: var(--sakura-50);
+}
+
+.rarity-seal--rara {
+  color: #625393;
+  background: #f1ecfa;
+}
+
+.rarity-seal--rara::before {
+  content: "★ ";
+}
+
+.rarity-seal--lendaria {
+  color: #8a6512;
+  background: #fff3c4;
+}
+
+.rarity-seal--lendaria::before {
+  content: "★★ ";
+}
+
+/* ---------- Carta aberta (janela) ---------- */
+.letter-modal,
+.king-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  overflow-y: auto;
+  background-color: rgba(58, 48, 54, 0.62);
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    8px 8px;
+  animation: overlay-in 240ms steps(3) both;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.letter-modal__window {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  margin: auto 0;
+}
+
+.letter-modal__envelope {
+  line-height: 0;
+  animation: envelope-bounce 300ms steps(3) both;
+  margin-bottom: calc(var(--px) * -6);
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes envelope-bounce {
+  0% {
+    transform: translateY(calc(var(--px) * 6));
+  }
+  60% {
+    transform: translateY(calc(var(--px) * -2));
+  }
+}
+
+/* o papel sai do envelope em 5 quadros, logo depois de a aba abrir */
+.letter-paper {
+  --fill: var(--cream-50);
+  width: calc(100% - var(--px) * 2);
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5) var(--space-4);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 28px, rgba(234, 211, 168, 0.5) 28px 32px);
+  transform-origin: 50% 0;
+  animation: paper-rise 500ms steps(5) 300ms both;
+}
+
+@keyframes paper-rise {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--px) * -10)) scaleY(0.2);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.letter-modal__window--rara .letter-paper {
+  --frame: #625393;
+}
+
+.letter-modal__window--lendaria .letter-paper {
+  --frame: #a67c1a;
+  --fill: #fffaec;
+  --bevel-light: rgba(255, 236, 170, 0.9);
+}
+
+/* carta final: moldura dourada dupla */
+.letter-modal__window--final .letter-paper {
+  outline: var(--px) solid var(--px-gold);
+  outline-offset: calc(var(--px) * 2);
+}
+
+.letter-paper__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.letter-paper__icon {
+  line-height: 0;
+}
+
+.letter-paper__title {
+  font-size: var(--text-xl);
+  line-height: 1.2;
+}
+
+.letter-paper__from {
+  font-family: var(--font-pixel);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+/* texto longo: fonte arredondada, confortável de ler */
+.letter-paper__body {
+  font-size: var(--text-md);
+  line-height: 1.75;
+}
+
+.letter-paper__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  background: repeating-linear-gradient(to right, var(--cream-300) 0 8px, transparent 8px 16px) top / 100% var(--px) no-repeat;
+}
+
+/* carimbo do correio dos pombos */
+.letter-paper__postmark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--sakura-700);
+  box-shadow:
+    inset 0 0 0 2px var(--sakura-700),
+    inset 0 0 0 4px var(--cream-50),
+    inset 0 0 0 6px var(--sakura-700);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  transform: rotate(-8deg);
+}
+
+.letter-paper__stamp-text {
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* ---------- Rei Pombo ---------- */
+.king-modal {
+  align-items: center;
+  background-color: rgba(58, 48, 54, 0.78);
+}
+
+.king-modal__window {
+  --fill: #fff8e4;
+  --frame: #a67c1a;
+  --bevel-light: rgba(255, 236, 170, 0.9);
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  text-align: center;
+  outline: var(--px) solid var(--px-gold);
+  outline-offset: calc(var(--px) * 2);
+  animation: px-pop-in 480ms steps(4) both;
+}
+
+/* raios dourados em pixel atrás do Rei */
+.king-modal__rays {
+  position: absolute;
+  top: var(--space-4);
+  left: 50%;
+  width: 160px;
+  height: 120px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(to right, #ffe9a8 0 8px, transparent 8px 16px);
+  opacity: 0.8;
+  animation: sparkle 800ms steps(1) infinite;
+}
+
+.king-modal__pigeon {
+  position: relative;
+  line-height: 0;
+  animation: king-drop 600ms steps(5) 200ms both;
+}
+
+@keyframes king-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-120px);
+  }
+  20% {
+    opacity: 1;
+  }
+}
+
+.king-modal__title {
+  position: relative;
+  font-size: var(--text-xl);
+  color: #8a6512;
+}
+
+.king-modal__text {
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter-card--lendaria::before,
+  .letter-card--lendaria::after,
+  .king-modal__rays {
+    animation: none;
+  }
+}

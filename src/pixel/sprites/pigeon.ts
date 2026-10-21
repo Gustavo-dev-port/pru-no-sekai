@@ -113,6 +113,18 @@ export const HAT_MAIL: PigeonAccessory = {
   grid: ['......kkkkkk............', '.....kBBBBBBk...........', '....kBByBBBBBk..........', '.kDDDDDDDDDDDDk.........'],
 }
 
+/** Rei Pombo: coroa dourada com joias. */
+export const HAT_KING: PigeonAccessory = {
+  top: -3,
+  onHead: true,
+  grid: [
+    '.....y..y..y............',
+    '.....yy.y.yy............',
+    '.....yyyyyyy............',
+    '.....yryyyry............',
+  ],
+}
+
 /** Carteiro: bolsa a tiracolo com uma carta aparecendo. */
 export const BAG_MAIL: PigeonAccessory = {
   top: 11,
