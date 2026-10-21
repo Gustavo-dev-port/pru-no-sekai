@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { GUARDIAN_GREETING_GATE } from './data/guardianMessages'
+import { getProgress } from './lib/progress'
 import { setReducedMotion } from './test/setup'
 
 function goTo(hash: string) {
@@ -30,6 +31,18 @@ describe('Santuário — portão e travessia', () => {
       expect(current).not.toBe(previous)
       previous = current!
     }
+  })
+
+  it('cutucar o Pombo-sama conta para a carta do Correio; visitar módulos fica registrado', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const pigeon = screen.getByRole('button', { name: /cutucar o pombo-sama/i })
+    await user.click(pigeon)
+    await user.click(pigeon)
+    expect(getProgress().pokes).toBe(2)
+    goTo('#/oraculo')
+    await screen.findByRole('heading', { level: 1, name: 'Oráculo dos Pombos' })
+    expect(getProgress().visited).toContain('oraculo')
   })
 
   it('durante a travessia o foco fica no botão, o estado é anunciado e o resto fica inerte', () => {
@@ -107,21 +120,27 @@ describe('Navegação entre os quatro módulos', () => {
     expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', '#/alimentar')
   })
 
-  it.each([
-    ['#/correio', 'Correio Pombo do Amor'],
-  ])('%s abre "%s", marca a aba atual e mostra que está em construção', async (hash, name) => {
+  it('#/correio abre o álbum de cartinhas (sem selo de construção) e marca a aba atual', async () => {
     render(<App />)
-    goTo(hash)
+    goTo('#/correio')
 
-    const title = await screen.findByRole('heading', { level: 1, name })
+    const title = await screen.findByRole('heading', { level: 1, name: 'Correio Pombo do Amor' })
     expect(title).toHaveFocus()
-    expect(document.title).toBe(`${name} · Pru no Sekai`)
-    expect(screen.getByText('Em construção')).toBeInTheDocument()
+    expect(document.title).toBe('Correio Pombo do Amor · Pru no Sekai')
+    expect(screen.queryByText('Em construção')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Álbum de cartinhas' })).toBeInTheDocument()
 
     const bottomNav = screen.getByRole('navigation', { name: /módulos do pru no sekai/i })
-    const links = within(bottomNav).getAllByRole('link')
-    expect(links).toHaveLength(4)
-    expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', hash)
+    expect(within(bottomNav).getAllByRole('link')).toHaveLength(4)
+    expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', '#/correio')
+  })
+
+  it('nenhum módulo está mais em construção no pátio do santuário', async () => {
+    setReducedMotion(true)
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /atravessar o torii/i }))
+    expect(screen.queryByText('Em construção')).not.toBeInTheDocument()
   })
 
   it('ao voltar de um módulo, quem já entrou cai direto no pátio', async () => {

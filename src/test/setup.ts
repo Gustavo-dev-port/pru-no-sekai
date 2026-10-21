@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
+import { resetProgress } from '../lib/progress'
 
 // jsdom não implementa matchMedia nem scrollTo.
 let reducedMotion = false
@@ -28,6 +29,8 @@ window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
 afterEach(() => {
   cleanup()
   sessionStorage.clear()
+  localStorage.clear()
+  resetProgress()
   window.location.hash = ''
   reducedMotion = false
 })

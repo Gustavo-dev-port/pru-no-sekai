@@ -4,6 +4,7 @@ import { PixelSprite, type SpriteLayer } from '../pixel/PixelSprite'
 import {
   BAG_MAIL,
   HAT_GUARDIAN,
+  HAT_KING,
   HAT_MAIL,
   HAT_SEER,
   PIGEON_BASE_Y,
@@ -26,7 +27,7 @@ import { useTicker } from '../pixel/useTicker'
 import './Pigeon.css'
 
 /** Função do pombo: muda só o acessório, o corpo é sempre o mesmo. */
-export type PigeonHat = 'none' | 'eboshi' | 'mail' | 'omikuji'
+export type PigeonHat = 'none' | 'eboshi' | 'mail' | 'omikuji' | 'king'
 
 /**
  * Pose da cabeça:
@@ -41,6 +42,7 @@ const ACCESSORIES: Record<PigeonHat, PigeonAccessory[]> = {
   eboshi: [HAT_GUARDIAN],
   omikuji: [HAT_SEER],
   mail: [BAG_MAIL, HAT_MAIL],
+  king: [HAT_KING],
 }
 
 /** Deslocamento da cabeça (em pixels do sprite) em cada pose. */

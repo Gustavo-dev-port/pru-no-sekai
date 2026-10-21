@@ -91,4 +91,6 @@ export const SPRITE_PALETTE: Record<string, string> = {
   m: PIXEL_COLORS.bag,
   M: PIXEL_COLORS.bagDark,
   z: PIXEL_COLORS.shadow,
+  /** Lacre do envelope: recolorido por raridade (ver sprites/mail.ts). */
+  X: PIXEL_COLORS.sakuraDark,
 }
