@@ -129,15 +129,58 @@ export const BAG_MAIL: PigeonAccessory = {
   ],
 }
 
-/** Olhinhos felizes (^) enquanto bica: substitui o olho aberto. */
-export const PIGEON_HAPPY_EYES = [
-  '........................',
-  '........................',
-  '........................',
-  '........................',
-  '....GeeG................',
-  '....eGGe................',
+/* ---------- Expressões ----------
+   Remendos sobre a cabeça (mesmas coordenadas de PIGEON_HEAD): cobrem o olho
+   original e desenham o novo. Acompanham a cabeça no bob e na bicada. */
+export type PigeonExpression = 'normal' | 'feliz' | 'surpreso' | 'satisfeito'
+
+const ROW = '........................'
+
+export const PIGEON_EXPRESSIONS: Record<Exclude<PigeonExpression, 'normal'>, readonly string[]> = {
+  /** Olhinhos fechados para cima (^). Usada ao bicar. */
+  feliz: [ROW, ROW, ROW, ROW, '....GeeG................', '....eGGe................'],
+  /** Olho arregalado: branco 3×3 com a pupila no meio. */
+  surpreso: [ROW, ROW, ROW, '....www.................', '....wew.................', '....www.................'],
+  /** Olho fechado em traço + bochecha maior. */
+  satisfeito: [
+    ROW,
+    ROW,
+    ROW,
+    ROW,
+    '....GGGG................',
+    '....eeee................',
+    ROW,
+    '......cccc..............',
+  ],
+}
+
+/** Asa bem aberta para cima: quadro de "voo" na chegada e na invasão. */
+export const PIGEON_WING_OPEN = [
+  ...Array<string>(4).fill(ROW),
+  '...................kk...',
+  '................kkhhk...',
+  '..............kkhhhhk...',
+  '............kkhhhhhhk...',
+  '...........khhddhhddk...',
+  '..........khhddhhddk....',
+  '..........khhhhhhhk.....',
+  '...........kkkkkkk......',
 ] as const
+
+/** "!" de susto, desenhado acima da cabeça (linhas negativas: fora do canvas). */
+export const PIGEON_EXCLAIM: PigeonAccessory = {
+  top: -10,
+  onHead: true,
+  grid: [
+    '...............kkk......',
+    '...............kyk......',
+    '...............kyk......',
+    '...............kyk......',
+    '...............kkk......',
+    '...............kyk......',
+    '...............kkk......',
+  ],
+}
 
 /* ---------- Variações de cor dos pombos comuns ----------
    Trocam só as cores das penas (g/G/h/d e o pescoço n/p). O desenho é o

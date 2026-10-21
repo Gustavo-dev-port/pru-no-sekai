@@ -18,9 +18,13 @@ function checkGrid(name: string, grid: readonly string[], width: number, maxHeig
 
 describe('sprites em pixel art', () => {
   it('pombo: todas as camadas e acessórios cabem na grade 24×28', () => {
-    for (const key of ['PIGEON_BODY', 'PIGEON_HEAD', 'PIGEON_BLINK', 'PIGEON_WING_DOWN', 'PIGEON_WING_UP'] as const) {
+    for (const key of ['PIGEON_BODY', 'PIGEON_HEAD', 'PIGEON_BLINK', 'PIGEON_WING_DOWN', 'PIGEON_WING_UP', 'PIGEON_WING_OPEN'] as const) {
       checkGrid(key, pigeon[key], pigeon.PIGEON_WIDTH, pigeon.PIGEON_HEIGHT - pigeon.PIGEON_BASE_Y)
     }
+    for (const [name, grid] of Object.entries(pigeon.PIGEON_EXPRESSIONS)) {
+      checkGrid(`expressão ${name}`, grid, pigeon.PIGEON_WIDTH, pigeon.PIGEON_HEAD.length)
+    }
+    checkGrid('PIGEON_EXCLAIM', pigeon.PIGEON_EXCLAIM.grid, pigeon.PIGEON_WIDTH, 8)
     for (const key of ['HAT_GUARDIAN', 'HAT_SEER', 'HAT_MAIL', 'BAG_MAIL'] as const) {
       const acc = pigeon[key]
       checkGrid(key, acc.grid, pigeon.PIGEON_WIDTH, pigeon.PIGEON_HEIGHT)

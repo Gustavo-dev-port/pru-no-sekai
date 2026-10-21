@@ -11,7 +11,7 @@
   gap: var(--space-4);
   max-width: 560px;
   margin: 0 auto;
-  padding: var(--space-5) var(--space-4) var(--space-5);
+  padding: var(--space-4) var(--space-4) var(--space-5);
 }
 
 .feed__header {
@@ -24,18 +24,36 @@
   font-size: var(--text-xl);
 }
 
-/* ---------- Balão do Pombo-sama (mesma linguagem do santuário) ---------- */
+/* ---------- Caixa de diálogo com retrato do Pombo-sama ---------- */
 .feed__dialog {
   width: 100%;
   padding: var(--space-2) var(--px) 0;
 }
 
+/* reação especial na invasão: a caixa treme em 4 quadros */
+.feed__dialog--shocked {
+  animation: dialog-shake 480ms steps(1);
+}
+
+@keyframes dialog-shake {
+  25% {
+    transform: translateX(calc(var(--px) * -1));
+  }
+  50% {
+    transform: translateX(var(--px));
+  }
+  75% {
+    transform: translateX(calc(var(--px) * -1));
+  }
+}
+
 .feed__bubble {
   position: relative;
-  min-height: 4.4em;
-  padding: var(--space-4) var(--space-4) var(--space-3);
-  font-size: var(--text-sm);
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 5em;
+  padding: var(--space-4) var(--space-3) var(--space-3);
 }
 
 .feed__speaker {
@@ -51,36 +69,56 @@
   box-shadow: 0 0 0 2px var(--px-ink);
 }
 
-/* ---------- Praça dos pombos ---------- */
-.feed-arena {
-  --fill: var(--sage-100);
-  position: relative;
-  width: calc(100% - var(--px) * 2);
-  height: 300px;
-  overflow: hidden;
-  /* chão de ladrilhos em xadrez + faixa de "céu" rosado no topo */
-  background-color: var(--sage-100);
-  background-image:
-    linear-gradient(to bottom, var(--sakura-100) 0 56px, var(--sage-300) 56px 60px, transparent 60px),
-    linear-gradient(45deg, var(--sage-200) 25%, transparent 25%, transparent 75%, var(--sage-200) 75%),
-    linear-gradient(45deg, var(--sage-200) 25%, transparent 25%, transparent 75%, var(--sage-200) 75%);
-  background-size:
-    100% 100%,
-    32px 32px,
-    32px 32px;
-  background-position:
-    0 0,
-    0 0,
-    16px 16px;
+.feed__portrait {
+  flex: none;
+  line-height: 0;
+  background: var(--sakura-100);
+  box-shadow:
+    -2px 0 0 0 var(--px-ink),
+    2px 0 0 0 var(--px-ink),
+    0 -2px 0 0 var(--px-ink),
+    0 2px 0 0 var(--px-ink);
 }
 
-@media (min-width: 560px) {
-  .feed-arena {
-    height: 340px;
+.feed__portrait .pixel-sprite {
+  overflow: hidden;
+}
+
+.feed__portrait--surprised {
+  background: var(--px-gold);
+  animation: portrait-hop 480ms steps(1);
+}
+
+@keyframes portrait-hop {
+  25%,
+  75% {
+    transform: translateY(calc(var(--px) * -1));
   }
 }
 
-/* plaquinha de madeira "鳩の広場" */
+.feed__message {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+/* ---------- Praça dos pombos ---------- */
+.feed-arena {
+  --fill: var(--cream-100);
+  position: relative;
+  width: calc(100% - var(--px) * 2);
+  /* acompanha a altura da tela: grande em celulares altos, menor nos baixos */
+  height: clamp(248px, calc(100dvh - 430px), 340px);
+  overflow: hidden;
+}
+
+.feed-arena__scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+/* plaquinha de madeira "鳩の広場": fica acima da cerca, longe dos pombos */
 .feed-arena__sign {
   position: absolute;
   top: var(--space-2);
@@ -99,6 +137,7 @@
     0 6px 0 0 var(--px-wood-dark);
   font-family: var(--font-pixel);
   line-height: 1.3;
+  white-space: nowrap;
 }
 
 .feed-arena__sign-sub {
@@ -106,33 +145,65 @@
   color: var(--ink-soft);
 }
 
-.feed-arena__lantern {
+/* pétalas discretas: só 3, lentas, atrás dos pombos */
+.feed-arena__petal {
   position: absolute;
-  top: var(--space-2);
+  top: -12px;
   z-index: 1;
   line-height: 0;
+  animation: plaza-petal 9s steps(36) infinite;
 }
 
-.feed-arena__lantern--left {
-  left: var(--space-4);
+.feed-arena__petal--0 {
+  left: 18%;
 }
 
-.feed-arena__lantern--right {
-  right: var(--space-4);
+.feed-arena__petal--1 {
+  left: 58%;
+  animation-delay: -3s;
+  animation-duration: 11s;
 }
 
-/* Cada pombo: (left, top) = pés no chão. Chega com um pulinho de 3 quadros. */
-.feed-pigeon {
+.feed-arena__petal--2 {
+  left: 82%;
+  animation-delay: -7s;
+}
+
+@keyframes plaza-petal {
+  to {
+    transform: translate(-48px, 320px);
+  }
+}
+
+/* ---------- Posição dos pombos e do que acontece perto deles ----------
+   --x vem dos dados (%). O clamp em px garante que o pombo inteiro, e o
+   grão na frente do bico, fiquem dentro da praça em qualquer largura
+   (AUD-004-02/04). Olhando para a esquerda, o bico precisa de mais espaço
+   à esquerda; virado, ao contrário. */
+.feed-spot {
+  --beak: 60px; /* 15 pixels do sprite: ponta do bico na bicada */
+  --edge-beak: 68px;
+  --edge-tail: 52px;
+  --pos: clamp(var(--edge-beak), var(--x), calc(100% - var(--edge-tail)));
   position: absolute;
-  transform: translate(-50%, -100%);
+  left: var(--pos);
   line-height: 0;
+}
+
+.feed-spot.is-flipped {
+  --pos: clamp(var(--edge-tail), var(--x), calc(100% - var(--edge-beak)));
+}
+
+/* (left, top) = pés no chão */
+.feed-pigeon {
+  transform: translate(-50%, -100%);
   animation: pigeon-arrive 360ms steps(3) both;
 }
 
 @keyframes pigeon-arrive {
   0% {
     opacity: 0;
-    transform: translate(-50%, calc(-100% - var(--px) * 4));
+    transform: translate(-50%, calc(-100% - var(--px) * 6));
   }
   34% {
     opacity: 1;
@@ -142,15 +213,15 @@
   }
 }
 
-/* invasores caem do céu, um atrás do outro */
+/* invasores caem do céu batendo asas, um atrás do outro */
 .feed-pigeon--invader {
-  animation: pigeon-drop 420ms steps(4) both;
+  animation: pigeon-drop 480ms steps(4) both;
 }
 
 @keyframes pigeon-drop {
   0% {
     opacity: 0;
-    transform: translate(-50%, calc(-100% - 160px));
+    transform: translate(-50%, calc(-100% - 200px));
   }
   25% {
     opacity: 1;
@@ -160,42 +231,202 @@
   }
 }
 
-/* grão: cai 3 pixels em 2 quadros e fica até ser bicado */
+/* grão: na frente do bico, com a base 2 pixels acima da linha dos pés */
 .feed-grain {
-  position: absolute;
-  z-index: 200;
-  transform: translate(-50%, -100%);
-  line-height: 0;
+  left: calc(var(--pos) - var(--beak));
+  transform: translate(-50%, calc(-100% - var(--px) * 2));
   animation: grain-drop 160ms steps(2) both;
+}
+
+.feed-grain.is-flipped {
+  left: calc(var(--pos) + var(--beak));
 }
 
 @keyframes grain-drop {
   from {
-    transform: translate(-50%, calc(-100% - var(--px) * 3));
+    transform: translate(-50%, calc(-100% - var(--px) * 7));
   }
 }
 
-/* faixa cômica da invasão */
+/* "nhac!" + farelos, no lugar do grão */
+.feed-nhac {
+  z-index: 500;
+  left: calc(var(--pos) - var(--beak));
+  pointer-events: none;
+}
+
+.feed-nhac.is-flipped {
+  left: calc(var(--pos) + var(--beak));
+}
+
+.feed-nhac__text {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--px) * 6);
+  transform: translateX(-50%);
+  padding: 0 var(--space-1);
+  background: var(--cream-50);
+  box-shadow: 0 0 0 2px var(--px-ink);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--sakura-700);
+  white-space: nowrap;
+  animation: nhac-rise 520ms steps(4) both;
+}
+
+@keyframes nhac-rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, var(--px));
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-50%, calc(var(--px) * -3));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(var(--px) * -4));
+  }
+}
+
+/* farelos: quadradinhos de 1 pixel que pulam para os lados */
+.feed-nhac__crumb {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--px) * 3);
+  width: var(--px);
+  height: var(--px);
+  background: var(--px-gold);
+  box-shadow: 0 0 0 1px var(--px-wood-deep);
+  animation: crumb 400ms steps(3) both;
+}
+
+.feed-nhac__crumb--1 {
+  --dx: -12px;
+  --dy: -12px;
+}
+
+.feed-nhac__crumb--2 {
+  --dx: 12px;
+  --dy: -16px;
+}
+
+.feed-nhac__crumb--3 {
+  --dx: -16px;
+  --dy: -4px;
+}
+
+.feed-nhac__crumb--4 {
+  --dx: 16px;
+  --dy: -4px;
+}
+
+@keyframes crumb {
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy));
+  }
+}
+
+/* reação de nova etapa: coraçõezinhos + "+1 pombo!" sobre quem chegou */
+.feed-hearts {
+  z-index: 400;
+  transform: translate(-50%, -96px);
+  pointer-events: none;
+}
+
+.feed-hearts__heart {
+  position: absolute;
+  bottom: 0;
+  animation: heart-float 900ms steps(5) both;
+}
+
+.feed-hearts__heart--0 {
+  left: -28px;
+}
+
+.feed-hearts__heart--1 {
+  left: -6px;
+  animation-delay: 120ms;
+}
+
+.feed-hearts__heart--2 {
+  left: 16px;
+  animation-delay: 240ms;
+}
+
+@keyframes heart-float {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--px));
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--px) * -6));
+  }
+}
+
+.feed-hearts__label {
+  position: absolute;
+  bottom: calc(var(--px) * 7);
+  left: 0;
+  transform: translateX(-50%);
+  padding: 0 var(--space-1);
+  background: var(--sakura-700);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 2px var(--sakura-900);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  white-space: nowrap;
+  animation: heart-float 900ms steps(5) both;
+}
+
+/* ---------- Faixa cômica da invasão ---------- */
 .feed-arena__banner {
   position: absolute;
-  top: 38%;
+  top: 34%;
   left: 50%;
-  z-index: 300;
-  padding: var(--space-1) var(--space-4);
+  z-index: 600;
+  display: grid;
+  justify-items: center;
+  padding: var(--space-1) var(--space-4) var(--space-2);
   background: var(--sakura-700);
   color: var(--on-accent);
   font-family: var(--font-pixel);
-  font-size: var(--text-xl);
-  letter-spacing: 0.08em;
   box-shadow:
     calc(var(--px) * -1) 0 0 0 var(--sakura-900),
     var(--px) 0 0 0 var(--sakura-900),
     0 calc(var(--px) * -1) 0 0 var(--sakura-900),
     0 var(--px) 0 0 var(--sakura-900),
+    inset 0 var(--px) 0 0 rgba(255, 255, 255, 0.25),
     0 calc(var(--px) * 2) 0 0 rgba(74, 59, 66, 0.3);
   transform: translate(-50%, -50%) rotate(-4deg);
-  animation: banner-in 480ms steps(4) both;
+  animation:
+    banner-in 480ms steps(4) both,
+    banner-wiggle 480ms steps(1) 480ms 2;
   pointer-events: none;
+}
+
+.feed-arena__banner-title {
+  font-size: var(--text-xl);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.feed-arena__banner-sub {
+  font-size: var(--text-xs);
+  color: var(--sakura-100);
 }
 
 @keyframes banner-in {
@@ -211,43 +442,109 @@
   }
 }
 
-/* ---------- Contadores (HUD) ---------- */
+@keyframes banner-wiggle {
+  50% {
+    transform: translate(-50%, -50%) rotate(4deg);
+  }
+}
+
+/* ---------- Contadores (HUD) + Recomeçar ---------- */
 .feed__hud {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  grid-template-columns: 1fr auto;
+  gap: var(--space-3);
+  align-items: stretch;
   width: 100%;
-  margin: 0;
   padding: 0 var(--px);
+}
+
+.feed__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin: 0;
 }
 
 .feed__stat {
   display: grid;
+  align-content: center;
   justify-items: center;
-  padding: var(--space-2);
+  padding: var(--space-1) var(--space-2);
 }
 
 .feed__stat dt {
   font-size: var(--text-xs);
   font-weight: 700;
+  line-height: 1.25;
   color: var(--ink-soft);
+  text-align: center;
 }
 
 .feed__stat dd {
   margin: 0;
   font-family: var(--font-pixel);
-  font-size: var(--text-xl);
+  font-size: 1.75rem;
   line-height: 1.1;
   color: var(--sakura-700);
 }
 
-.feed__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-4);
+.feed__reset {
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.feed__reset-icon {
+  font-size: var(--text-lg);
+  line-height: 1.1;
+}
+
+/* depois da invasão, o Recomeçar ganha destaque */
+.feed__reset--highlight {
+  --fill: var(--sakura-100);
+  --frame: var(--sakura-700);
+  color: var(--sakura-900);
 }
 
 .feed__throw {
-  min-width: 240px;
+  width: calc(100% - var(--px) * 2);
+  max-width: 360px;
+  /* controle de jogo: em telas muito baixas (ex.: 320×568), o botão principal
+     gruda logo acima da barra inferior em vez de sumir abaixo dela */
+  position: sticky;
+  bottom: calc(var(--bottom-nav-h) + var(--space-3));
+  z-index: 5;
+}
+
+/* movimento reduzido: sem pétalas nem efeitos voando (o jogo funciona igual) */
+@media (prefers-reduced-motion: reduce) {
+  .feed-arena__petal,
+  .feed-nhac__crumb,
+  .feed-hearts__heart {
+    display: none;
+  }
+}
+
+/* Telas baixas (ex.: 375×667): tudo mais junto para a praça, os contadores e
+   os dois botões caberem acima da barra inferior sem rolar (AUD-004-04).
+   Fica no fim do arquivo para vencer as regras acima. */
+@media (max-height: 760px) {
+  .feed {
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+  }
+
+  .feed__header .eyebrow {
+    display: none;
+  }
+
+  .feed__header h1 {
+    font-size: 1.5rem;
+  }
+
+  .feed__stat dd {
+    font-size: 1.5rem;
+  }
 }
