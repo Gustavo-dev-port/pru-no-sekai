@@ -74,6 +74,9 @@
   --dur-med: 240ms;
   --dur-slow: 480ms;
 
+  /* Altura da barra inferior dos módulos (sem a área segura do iPhone) */
+  --bottom-nav-h: 84px;
+
   /* Camadas */
   --z-scene: 0;
   --z-petals: 1;

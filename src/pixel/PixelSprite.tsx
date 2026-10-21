@@ -19,6 +19,8 @@ interface PixelSpriteProps {
   recolor?: Record<string, string>
   title?: string
   className?: string
+  /** Mostra só um recorte do sprite (ex.: retrato do rosto). Em pixels do sprite. */
+  crop?: { x: number; y: number; w: number; h: number }
 }
 
 // Cada linha vira poucos <rect>: pixels vizinhos da mesma cor são unidos.
@@ -49,12 +51,13 @@ function rectsFor(grid: readonly string[], recolor?: Record<string, string>): Re
   return rects
 }
 
-export function PixelSprite({ width, height, layers, scale = 4, recolor, title, className = '' }: PixelSpriteProps) {
+export function PixelSprite({ width, height, layers, scale = 4, recolor, title, className = '', crop }: PixelSpriteProps) {
+  const view = crop ?? { x: 0, y: 0, w: width, h: height }
   return (
     <svg
-      viewBox={`0 0 ${width} ${height}`}
-      width={width * scale}
-      height={height * scale}
+      viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
+      width={view.w * scale}
+      height={view.h * scale}
       shapeRendering="crispEdges"
       className={`pixel-sprite ${className}`}
       role={title ? 'img' : undefined}

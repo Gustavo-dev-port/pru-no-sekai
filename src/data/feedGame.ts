@@ -1,7 +1,7 @@
 // Módulo 3 — Alimente o Pombo. Tudo o que é ajustável no minijogo fica aqui:
 // quando cada pombo chega, as falas de cada etapa, a invasão e onde cada
 // pombo fica no jardim.
-import type { PigeonVariant } from '../pixel/sprites/pigeon'
+import type { PigeonExpression, PigeonVariant } from '../pixel/sprites/pigeon'
 
 export interface FeedStage {
   /** A partir de quantos grãos esta etapa começa. */
@@ -39,7 +39,9 @@ export const AFTER_INVASION_MESSAGE = 'Os pombos exigem mais milho. É um protes
 export const RESET_MESSAGE = 'Todos os pombos foram embora. Por enquanto.'
 
 /* ---------- Lugares dos pombos no jardim ----------
-   x: centro do pombo, em % da largura. y: linha dos pés, em % da altura.
+   x: centro do pombo, em % da largura (a tela ainda garante, em px, que o
+   pombo inteiro e o grão caibam na praça). y: linha dos pés, em % da altura;
+   sempre ≥ 55 para nenhum pombo cobrir a plaquinha nem a cerca.
    Os primeiros 8 são o grupo principal (chegam aos poucos, nesta ordem).
    O resto chega de uma vez na invasão. */
 export interface PigeonSlot {
@@ -47,6 +49,8 @@ export interface PigeonSlot {
   y: number
   variant: PigeonVariant
   flip: boolean
+  /** Cara do pombo quando está parado (os invasores chegam com caras variadas). */
+  expression?: PigeonExpression
 }
 
 export const MAIN_SLOTS: readonly PigeonSlot[] = [
@@ -55,17 +59,25 @@ export const MAIN_SLOTS: readonly PigeonSlot[] = [
   { x: 77, y: 62, variant: 'canela', flip: false },
   { x: 34, y: 90, variant: 'sumi', flip: true },
   { x: 68, y: 92, variant: 'classico', flip: true },
-  { x: 11, y: 82, variant: 'canela', flip: true },
-  { x: 90, y: 82, variant: 'shiro', flip: false },
-  { x: 52, y: 50, variant: 'sumi', flip: false },
+  { x: 16, y: 82, variant: 'canela', flip: true },
+  { x: 84, y: 82, variant: 'shiro', flip: false },
+  { x: 52, y: 57, variant: 'sumi', flip: false },
 ]
 
 const VARIANTS: PigeonVariant[] = ['classico', 'shiro', 'canela', 'sumi']
+const INVADER_FACES: PigeonExpression[] = ['surpreso', 'feliz', 'normal', 'surpreso', 'satisfeito', 'feliz']
 
 /** 18 pombos extras da invasão, espalhados de forma fixa (sem Math.random). */
 export const INVASION_SLOTS: readonly PigeonSlot[] = Array.from({ length: 18 }, (_, i) => ({
-  x: 4 + ((i * 37) % 92),
-  y: 42 + ((i * 23) % 56),
+  x: 12 + ((i * 37) % 77),
+  y: 56 + ((i * 23) % 41),
   variant: VARIANTS[(i * 3 + 1) % VARIANTS.length],
   flip: i % 3 !== 0,
+  expression: INVADER_FACES[i % INVADER_FACES.length],
 }))
+
+/**
+ * Durante a invasão, os grãos vão para pombos da frente (pés abaixo desta
+ * linha, em %), que não ficam escondidos atrás dos outros.
+ */
+export const FRONT_ROW_Y = 72

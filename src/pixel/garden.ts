@@ -5,7 +5,7 @@ import { PIXEL_COLORS as C } from './palette'
 // tela, mas os objetos têm tamanho FIXO em pixels: no celular aparece o miolo
 // (torii + Fuji), no desktop aparecem mais árvores e lanternas.
 
-type Ctx = CanvasRenderingContext2D
+export type Ctx = CanvasRenderingContext2D
 
 export interface GardenLayout {
   /** Centro do vão do torii, em pixels do canvas (alvo do zoom de entrada). */
@@ -13,12 +13,12 @@ export interface GardenLayout {
   focusY: number
 }
 
-function rect(ctx: Ctx, x: number, y: number, w: number, h: number, color: string) {
+export function rect(ctx: Ctx, x: number, y: number, w: number, h: number, color: string) {
   ctx.fillStyle = color
   ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h))
 }
 
-function disk(ctx: Ctx, cx: number, cy: number, r: number, color: string) {
+export function disk(ctx: Ctx, cx: number, cy: number, r: number, color: string) {
   for (let dy = -r; dy <= r; dy++) {
     const half = Math.floor(Math.sqrt(r * r - dy * dy) + 0.35)
     rect(ctx, cx - half, cy + dy, half * 2 + 1, 1, color)
@@ -26,7 +26,7 @@ function disk(ctx: Ctx, cx: number, cy: number, r: number, color: string) {
 }
 
 /** Ruído determinístico: o mesmo cenário sempre, sem Math.random. */
-function hash(x: number, y: number) {
+export function hash(x: number, y: number) {
   let h = (x * 374761393 + y * 668265263) | 0
   h = (h ^ (h >>> 13)) * 1274126177
   return ((h ^ (h >>> 16)) >>> 0) % 1000
@@ -140,7 +140,7 @@ function sakuraTree(ctx: Ctx, x: number, base: number) {
   }
 }
 
-function stoneLantern(ctx: Ctx, x: number, base: number) {
+export function stoneLantern(ctx: Ctx, x: number, base: number) {
   rect(ctx, x - 4, base - 2, 9, 2, C.stoneDark)
   rect(ctx, x - 1, base - 9, 3, 7, C.stone)
   rect(ctx, x - 3, base - 11, 7, 2, C.stoneDark)

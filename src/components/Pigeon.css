@@ -29,3 +29,19 @@
 .pixel-sprite--flip {
   transform: scaleX(-1);
 }
+
+/* A cabeça na bicada e o "!" saem um pouco do quadro do sprite. */
+.pigeon .pixel-sprite {
+  overflow: visible;
+}
+
+/* "!" pisca 2 vezes em quadros */
+.pigeon__exclaim {
+  animation: exclaim-blink 480ms steps(1) 2;
+}
+
+@keyframes exclaim-blink {
+  50% {
+    opacity: 0;
+  }
+}

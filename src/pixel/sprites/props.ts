@@ -29,6 +29,13 @@ export const GRAIN = {
   grid: ['.k.', 'kyk', 'kLk'],
 } as const
 
+/** Coraçãozinho da reação de nova etapa. */
+export const HEART = {
+  width: 5,
+  height: 5,
+  grid: ['.k.k.', 'ksksk', 'kssSk', '.kSk.', '..k..'],
+} as const
+
 /** Pétala de sakura caindo. */
 export const PETAL = {
   width: 3,
