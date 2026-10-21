@@ -9,6 +9,7 @@ import SanctuaryPage from './modules/sanctuary/SanctuaryPage'
 const OraclePage = lazy(() => import('./modules/oracle/OraclePage'))
 const FeedPage = lazy(() => import('./modules/feed/FeedPage'))
 const MailPage = lazy(() => import('./modules/mail/MailPage'))
+const FarmPage = lazy(() => import('./modules/farm/FarmPage'))
 
 function renderRoute(route: ModuleId) {
   switch (route) {
@@ -20,6 +21,8 @@ function renderRoute(route: ModuleId) {
       return <FeedPage />
     case 'correio':
       return <MailPage />
+    case 'fazenda':
+      return <FarmPage />
   }
 }
 

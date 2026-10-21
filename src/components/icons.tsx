@@ -11,6 +11,7 @@ import {
   ICON_LETTER,
   ICON_OMIKUJI,
   ICON_SPARKLES,
+  ICON_SPROUT,
   ICON_SUN,
   ICON_TORII,
 } from '../pixel/sprites/icons'
@@ -20,6 +21,7 @@ const MODULE_ICONS: Record<ModuleId, readonly string[]> = {
   oraculo: ICON_OMIKUJI,
   alimentar: ICON_GRAIN,
   correio: ICON_LETTER,
+  fazenda: ICON_SPROUT,
 }
 
 const FORTUNE_ICONS: Record<FortuneIcon, readonly string[]> = {

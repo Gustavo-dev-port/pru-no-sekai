@@ -126,3 +126,18 @@ export const ICON_SPARKLES = [
   '........',
   '........',
 ] as const
+
+export const ICON_SPROUT = [
+  '............',
+  '..aa....aa..',
+  '.aAAa..aAAa.',
+  '..aAAaaAAa..',
+  '....aAAa....',
+  '.....AA.....',
+  '.....AA.....',
+  '..OOOOOOOO..',
+  '.OOMOOOMOOO.',
+  'OOOOOMOOOOOO',
+  'OMOOOOOOOMOO',
+  '............',
+] as const

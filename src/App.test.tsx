@@ -85,7 +85,7 @@ describe('Santuário — portão e travessia', () => {
 })
 
 describe('Navegação entre os quatro módulos', () => {
-  it('o pátio tem uma ema para cada uma das três experiências', async () => {
+  it('o pátio tem uma ema para cada uma das quatro experiências', async () => {
     setReducedMotion(true)
     const user = userEvent.setup()
     render(<App />)
@@ -93,7 +93,7 @@ describe('Navegação entre os quatro módulos', () => {
 
     const nav = screen.getByRole('navigation', { name: /experiências do santuário/i })
     const links = within(nav).getAllByRole('link')
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(['#/oraculo', '#/alimentar', '#/correio'])
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(['#/oraculo', '#/alimentar', '#/correio', '#/fazenda'])
   })
 
   it('#/oraculo abre o Oráculo pronto (sem selo de construção) e marca a aba atual', async () => {
@@ -131,7 +131,7 @@ describe('Navegação entre os quatro módulos', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Álbum de cartinhas' })).toBeInTheDocument()
 
     const bottomNav = screen.getByRole('navigation', { name: /módulos do pru no sekai/i })
-    expect(within(bottomNav).getAllByRole('link')).toHaveLength(4)
+    expect(within(bottomNav).getAllByRole('link')).toHaveLength(5)
     expect(within(bottomNav).getByRole('link', { current: 'page' })).toHaveAttribute('href', '#/correio')
   })
 

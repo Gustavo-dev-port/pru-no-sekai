@@ -1,0 +1,411 @@
+.farm-page {
+  min-height: 100dvh;
+  background: linear-gradient(to bottom, var(--sakura-100) 0 64px, #ffecee 64px 128px, var(--cream-50) 128px);
+  padding-bottom: 112px; /* barra inferior */
+}
+
+.farm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-5);
+}
+
+.farm__header {
+  display: grid;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.farm__header h1 {
+  font-size: var(--text-xl);
+}
+
+/* ---------- Diálogo do Pombo-sama (mesma linguagem do Módulo 3) ---------- */
+.farm__dialog {
+  position: relative;
+  width: calc(100% - var(--px) * 2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 4.8em;
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.farm__speaker {
+  position: absolute;
+  top: calc(var(--px) * -4);
+  left: var(--space-3);
+  padding: 0 var(--space-2);
+  background: var(--px-torii);
+  color: var(--on-accent);
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+.farm__message {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+/* ---------- Estoque ---------- */
+.farm-stock {
+  width: calc(100% - var(--px) * 2);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+}
+
+.farm-stock__title {
+  font-size: var(--text-md);
+  margin-bottom: var(--space-1);
+}
+
+.farm-stock__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.farm-stock__table th,
+.farm-stock__table td {
+  padding: 2px var(--space-2);
+  text-align: center;
+}
+
+.farm-stock__table thead th {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.farm-stock__table tbody th {
+  text-align: left;
+  font-weight: 700;
+}
+
+.farm-stock__table td {
+  font-family: var(--font-pixel);
+  font-size: var(--text-lg);
+  color: var(--sakura-700);
+}
+
+.farm-stock__table tbody tr + tr {
+  background: repeating-linear-gradient(to right, var(--cream-300) 0 8px, transparent 8px 16px) top / 100% 2px no-repeat;
+}
+
+.farm-stock__crop {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- Escolha da semente ---------- */
+.seed-picker {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  padding: 0 2px;
+}
+
+.seed-picker__option {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: 72px;
+  padding: var(--space-2) var(--space-1);
+  border: 0;
+  background: var(--cream-50);
+  box-shadow:
+    -2px 0 0 0 var(--px-ink),
+    2px 0 0 0 var(--px-ink),
+    0 -2px 0 0 var(--px-ink),
+    0 2px 0 0 var(--px-ink),
+    0 6px 0 0 rgba(74, 59, 66, 0.2);
+  margin: 2px 2px 6px;
+  cursor: pointer;
+}
+
+.seed-picker__option[aria-pressed="true"] {
+  background: var(--sakura-100);
+  transform: translateY(var(--px));
+  box-shadow:
+    -2px 0 0 0 var(--sakura-700),
+    2px 0 0 0 var(--sakura-700),
+    0 -2px 0 0 var(--sakura-700),
+    0 2px 0 0 var(--sakura-700);
+}
+
+.seed-picker__name {
+  font-family: var(--font-pixel);
+  font-size: var(--text-sm);
+}
+
+.seed-picker__info {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* ---------- Canteiros ---------- */
+.farm-field {
+  --fill: var(--sage-200);
+  position: relative;
+  width: calc(100% - var(--px) * 2);
+  overflow: hidden;
+  padding: 72px var(--space-3) var(--space-4); /* topo: céu + cerca do fundo */
+}
+
+.farm-field__scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.farm-field__plots {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.farm-field__item {
+  position: relative;
+  display: flex;
+}
+
+.plot {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1) var(--space-2);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+}
+
+.plot:focus-visible {
+  outline: var(--px) dashed var(--sakura-700);
+  outline-offset: 2px;
+}
+
+/* terra arada: moldura escura + sulcos de 1 pixel */
+.plot__soil {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  width: 100%;
+  height: 76px;
+  background:
+    repeating-linear-gradient(to bottom, #a87850 0 12px, #8e6240 12px 16px);
+  box-shadow:
+    -4px 0 0 0 #6e4637,
+    4px 0 0 0 #6e4637,
+    0 -4px 0 0 #6e4637,
+    0 4px 0 0 #6e4637,
+    0 8px 0 0 rgba(74, 59, 66, 0.2);
+  margin: 4px 0 8px;
+}
+
+.plot:hover .plot__soil,
+.plot:focus-visible .plot__soil {
+  transform: translateY(calc(var(--px) * -1));
+}
+
+.plot:active .plot__soil {
+  transform: translateY(var(--px));
+}
+
+.plot__crop {
+  line-height: 0;
+  margin-bottom: -4px;
+  animation: crop-grow 360ms steps(3) both;
+}
+
+@keyframes crop-grow {
+  from {
+    transform: scaleY(0.6);
+    transform-origin: 50% 100%;
+  }
+}
+
+.plot--ready .plot__crop {
+  animation: crop-wiggle 1.2s steps(1) infinite;
+}
+
+@keyframes crop-wiggle {
+  25% {
+    transform: translateX(calc(var(--px) * -1));
+  }
+  75% {
+    transform: translateX(var(--px));
+  }
+}
+
+/* brilho dourado piscando sobre o que está pronto */
+.plot__sparkle {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: var(--px);
+  height: var(--px);
+  background: var(--px-gold);
+  box-shadow:
+    var(--px) 0 0 0 #fff3c4,
+    calc(var(--px) * -1) 0 0 0 #fff3c4,
+    0 var(--px) 0 0 #fff3c4,
+    0 calc(var(--px) * -1) 0 0 #fff3c4;
+  animation: sparkle 800ms steps(1) infinite;
+}
+
+@keyframes sparkle {
+  50% {
+    opacity: 0;
+  }
+}
+
+.plot--ready .plot__soil {
+  box-shadow:
+    -4px 0 0 0 var(--px-gold),
+    4px 0 0 0 var(--px-gold),
+    0 -4px 0 0 var(--px-gold),
+    0 4px 0 0 var(--px-gold),
+    0 8px 0 0 rgba(74, 59, 66, 0.2);
+}
+
+/* barra de crescimento em degraus */
+.plot__bar {
+  width: 80%;
+  height: 8px;
+  background: var(--cream-50);
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+.plot__bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--sage-500);
+}
+
+.plot__caption {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  padding: 0 var(--space-1);
+  background: var(--cream-50);
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+.plot--ready .plot__caption {
+  background: var(--sakura-700);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 2px var(--sakura-900);
+}
+
+/* "+5" da colheita sobe em quadros */
+.farm-field__pop {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 2;
+  padding: 0 var(--space-2);
+  background: var(--px-gold);
+  box-shadow: 0 0 0 2px #a67c1a;
+  font-family: var(--font-pixel);
+  font-size: var(--text-md);
+  color: var(--px-ink);
+  pointer-events: none;
+  animation: pop-rise 900ms steps(5) both;
+}
+
+@keyframes pop-rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -24px);
+  }
+}
+
+.farm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.farm__pouch .pixel-sprite {
+  flex: none;
+}
+
+/* ---------- Tutorial ---------- */
+.farm-tutorial {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5) var(--space-4);
+  overflow-y: auto;
+  background: rgba(58, 48, 54, 0.62);
+}
+
+.farm-tutorial__window {
+  width: 100%;
+  max-width: 420px;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  margin: auto 0;
+  animation: px-pop-in 480ms steps(4) both;
+}
+
+.farm-tutorial__pigeon {
+  line-height: 0;
+}
+
+.farm-tutorial__title {
+  font-size: var(--text-lg);
+  text-align: center;
+}
+
+.farm-tutorial__steps {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.farm-tutorial__tip {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plot__sparkle,
+  .plot--ready .plot__crop {
+    animation: none;
+  }
+}

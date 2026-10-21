@@ -2,7 +2,7 @@
 // já existe e do que falta ficam aqui, para a navegação e as telas
 // "em construção" nunca divergirem do estado real do projeto.
 
-export type ModuleId = 'santuario' | 'oraculo' | 'alimentar' | 'correio'
+export type ModuleId = 'santuario' | 'oraculo' | 'alimentar' | 'correio' | 'fazenda'
 
 export type ModuleStatus = 'prototipo' | 'pronto' | 'em-construcao'
 
@@ -13,7 +13,7 @@ export interface ModuleFeature {
 
 export interface ModuleInfo {
   id: ModuleId
-  number: 1 | 2 | 3 | 4
+  number: 1 | 2 | 3 | 4 | 5
   path: string
   name: string
   shortName: string
@@ -96,6 +96,25 @@ export const MODULES: ModuleInfo[] = [
       { label: 'Abertura interativa de envelopes', done: true },
       { label: 'Categorias de mensagens', done: true },
       { label: 'Pequenas surpresas românticas', done: true },
+    ],
+  },
+  {
+    id: 'fazenda',
+    number: 5,
+    path: '/fazenda',
+    name: 'Fazendinha da Pru',
+    shortName: 'Fazenda',
+    jp: '畑',
+    tagline: 'Plante, espere e colha comidinhas para os pombos.',
+    status: 'prototipo',
+    wipLine: '',
+    features: [
+      { label: 'Quatro canteiros para plantar', done: true },
+      { label: 'Crescimento pelo horário real (continua com o site fechado)', done: true },
+      { label: 'Colheita e estoque de alimentos e sementes', done: true },
+      { label: 'Saquinho grátis de sementes', done: true },
+      { label: 'Tutorial da primeira visita', done: true },
+      { label: 'Gastar alimentos nos outros módulos', done: false },
     ],
   },
 ]

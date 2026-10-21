@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { getProgress, markOpened, markSeen, recordPoke, recordVisit, resetProgress } from './progress'
 
-const stored = () => JSON.parse(localStorage.getItem('pru:correio:v1') ?? 'null')
+const stored = () => JSON.parse(localStorage.getItem('pru:save') ?? 'null')?.mail
 
 describe('progresso do álbum (só no aparelho)', () => {
   it('começa vazio', () => {

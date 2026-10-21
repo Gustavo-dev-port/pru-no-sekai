@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { SPRITE_PALETTE } from './palette'
 import * as icons from './sprites/icons'
 import * as mail from './sprites/mail'
+import * as farm from './sprites/farm'
 import * as pigeon from './sprites/pigeon'
 import * as props from './sprites/props'
 
@@ -45,6 +46,16 @@ describe('sprites em pixel art', () => {
     checkGrid('ENVELOPE_OPEN', mail.ENVELOPE_OPEN, mail.ENVELOPE_WIDTH, mail.ENVELOPE_HEIGHT)
     checkGrid('POSTBOX', mail.POSTBOX.grid, mail.POSTBOX.width, mail.POSTBOX.height)
     for (const [emoji, grid] of Object.entries(mail.LETTER_ICONS)) checkGrid(`ícone ${emoji}`, grid, 8, 8)
+  })
+
+  it('fazenda: plantas em 4 estágios, ícones do estoque e saquinho', () => {
+    for (const crop of ['milho', 'arroz', 'girassol'] as const) {
+      for (const stage of [0, 1, 2, 3] as const) {
+        checkGrid(`${crop} estágio ${stage}`, farm.cropSprite(crop, stage), farm.CROP_SPRITE_WIDTH, farm.CROP_SPRITE_HEIGHT)
+      }
+      checkGrid(`ícone ${crop}`, farm.CROP_ICONS[crop], 8, 8)
+    }
+    checkGrid('SEED_POUCH', farm.SEED_POUCH, 8, 8)
   })
 
   it('ícones: módulos 12×12, categorias 8×8', () => {
