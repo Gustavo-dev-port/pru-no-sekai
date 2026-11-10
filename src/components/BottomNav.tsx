@@ -3,10 +3,16 @@ import { hrefFor } from '../router'
 import { ModuleIcon } from './icons'
 import './BottomNav.css'
 
-/** Barra inferior estilo minijogo com os quatro módulos. */
-export function BottomNav({ current }: { current: ModuleId }) {
+interface BottomNavProps {
+  current: ModuleId
+  /** Com uma janela modal aberta, a barra não recebe foco nem toques. */
+  inert?: boolean
+}
+
+/** Barra inferior estilo minijogo com os cinco módulos. */
+export function BottomNav({ current, inert = false }: BottomNavProps) {
   return (
-    <nav className="bottom-nav" aria-label="Módulos do Pru no Sekai">
+    <nav className="bottom-nav" aria-label="Módulos do Pru no Sekai" inert={inert}>
       <ul className="bottom-nav__list">
         {MODULES.map((m) => (
           <li key={m.id}>

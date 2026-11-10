@@ -84,7 +84,7 @@ describe('Santuário — portão e travessia', () => {
   })
 })
 
-describe('Navegação entre os quatro módulos', () => {
+describe('Navegação entre os módulos', () => {
   it('o pátio tem uma ema para cada uma das quatro experiências', async () => {
     setReducedMotion(true)
     const user = userEvent.setup()

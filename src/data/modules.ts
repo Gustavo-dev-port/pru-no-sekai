@@ -1,4 +1,4 @@
-// Configuração dos quatro módulos. Nome, rota, textos e o checklist do que
+// Configuração dos cinco módulos. Nome, rota, textos e o checklist do que
 // já existe e do que falta ficam aqui, para a navegação e as telas
 // "em construção" nunca divergirem do estado real do projeto.
 
@@ -34,7 +34,7 @@ export const MODULES: ModuleInfo[] = [
     shortName: 'Santuário',
     jp: '神社',
     tagline: 'O portão de entrada do mundo da Pru.',
-    status: 'prototipo',
+    status: 'pronto',
     wipLine: '',
     features: [
       { label: 'Jardim japonês com portão torii', done: true },
@@ -69,7 +69,7 @@ export const MODULES: ModuleInfo[] = [
     shortName: 'Alimentar',
     jp: 'えさやり',
     tagline: 'Jogue grãos, faça amigos, cause uma invasão.',
-    status: 'prototipo',
+    status: 'pronto',
     wipLine: 'O milho ainda está no correio. Os pombos estão esperando, impacientes.',
     features: [
       { label: 'Distribuição de grãos', done: true },

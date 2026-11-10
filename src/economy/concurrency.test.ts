@@ -28,7 +28,9 @@ function twoTabs({ withLocks = true } = {}) {
   const b = open()
   const act = (tab: typeof a, action: Parameters<typeof runEconomyAction>[0]) =>
     runEconomyAction(action, tab.transactSave, () => now)
-  return { storage, locks, a, b, act, setNow: (t: number) => (now = t), saved: () => JSON.parse(storage.getItem(SAVE_KEY)!) }
+  /** Espera as duas abas terminarem de abrir (a criação do save também passa pelo lock). */
+  const ready = () => Promise.all([a.flush(), b.flush()])
+  return { storage, locks, a, b, act, ready, setNow: (t: number) => (now = t), saved: () => JSON.parse(storage.getItem(SAVE_KEY)!) }
 }
 
 describe('AUD-007-01 — duas abas', () => {
@@ -84,9 +86,11 @@ describe('AUD-007-01 — duas abas', () => {
 
   it('toda ação econômica passa pelo lock "pru:save"', async () => {
     const t = twoTabs()
+    await t.ready()
+    const opening = t.locks!.requests.get(LOCK_NAME) ?? 0 // pedidos feitos ao abrir as abas
     await t.act(t.a, plantAction(0, 'milho'))
     await t.act(t.b, pouchAction)
-    expect(t.locks!.requests.get(LOCK_NAME)).toBe(2)
+    expect(t.locks!.requests.get(LOCK_NAME)! - opening).toBe(2)
   })
 
   it('sincronização: depois que uma aba grava, a outra recebe o estado novo (evento storage)', async () => {
@@ -112,6 +116,7 @@ describe('AUD-007-01 — duas abas', () => {
     vi.useFakeTimers()
     try {
       const t = twoTabs()
+      await t.ready()
       const release = t.locks!.hold(LOCK_NAME)
       const before = t.storage.getItem(SAVE_KEY)
       const pending = t.act(t.a, plantAction(0, 'milho'))

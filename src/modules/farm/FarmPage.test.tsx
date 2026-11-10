@@ -186,3 +186,61 @@ describe('Fazendinha', () => {
     expect(localStorage.getItem(SAVE_KEY)).toBe(future)
   })
 })
+
+describe('AUD-007.1-01 — Fazendinha com save de versão mais nova (somente leitura)', () => {
+  it('primeira visita: o tutorial fecha, mas "visto" não é marcado nem gravado', async () => {
+    const future = JSON.stringify({ schemaVersion: 3, mail: {}, economy: { tutorialDone: false } })
+    localStorage.setItem(SAVE_KEY, future)
+    reloadSaveForTests()
+    render(<FarmPage />)
+
+    const tutorial = screen.getByRole('dialog', { name: 'Como cuidar da fazendinha' })
+    fireEvent.click(within(tutorial).getByRole('button', { name: /vamos plantar/i }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument() // ninguém fica preso no tutorial
+    advance(0)
+    expect(screen.getByRole('heading', { level: 1, name: 'Fazendinha da Pru' })).toHaveFocus()
+
+    const economy = getSave().economy
+    await tap(plot(1))
+    expect(status()).toHaveTextContent('só para olhar')
+    expect(getSave().economy).toBe(economy) // nada plantado, nada mudou em memória
+    expect(getSave().economy.tutorialDone).toBe(false)
+    expect(getSave().economy.plots[0]).toBeNull()
+    expect(localStorage.getItem(SAVE_KEY)).toBe(future)
+  })
+})
+
+describe('Fazendinha — tutorial (janela modal) só com teclado', () => {
+  const bottomNav = () => screen.getByRole('navigation', { name: /módulos do pru no sekai/i, hidden: true })
+
+  it('Tab e Shift+Tab ficam no tutorial; a barra inferior fica inerte até ele fechar', () => {
+    render(<FarmPage />)
+    const tutorial = screen.getByRole('dialog', { name: 'Como cuidar da fazendinha' })
+    const start = within(tutorial).getByRole('button', { name: /vamos plantar/i })
+    expect(start).toHaveFocus()
+    expect(bottomNav()).toHaveAttribute('inert')
+
+    // fireEvent devolve false quando o Tab foi tratado pela janela (o navegador não move o foco)
+    expect(fireEvent.keyDown(start, { key: 'Tab' })).toBe(false)
+    expect(start).toHaveFocus()
+    expect(fireEvent.keyDown(start, { key: 'Tab', shiftKey: true })).toBe(false)
+    expect(start).toHaveFocus()
+
+    fireEvent.keyDown(start, { key: 'Escape' })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(bottomNav()).not.toHaveAttribute('inert')
+  })
+
+  it('"Como jogar": a barra fica inerte e o foco volta ao botão ao fechar com Esc', () => {
+    finishTutorial()
+    render(<FarmPage />)
+    const help = screen.getByRole('button', { name: /como jogar/i })
+    help.focus()
+    fireEvent.click(help) // botão nativo: Enter/Espaço disparam click
+    expect(bottomNav()).toHaveAttribute('inert')
+    fireEvent.keyDown(document.activeElement!, { key: 'Escape' })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(help).toHaveFocus()
+    expect(bottomNav()).not.toHaveAttribute('inert')
+  })
+})

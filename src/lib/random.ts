@@ -1,7 +1,7 @@
 /**
  * Sorteia um índice de `length` diferente de `previous`, para nunca
- * repetir o mesmo item duas vezes seguidas. Usado pelo pombo guardião
- * e, futuramente, pelo Oráculo dos Pombos.
+ * repetir o mesmo item duas vezes seguidas. Usado pelas falas dos pombos
+ * (guardião e carteiro), pelo Oráculo e pelas mensagens da invasão.
  */
 export function pickIndexAvoiding(length: number, previous: number | null, rng: () => number = Math.random): number {
   if (length <= 0) throw new Error('pickIndexAvoiding: lista vazia')

@@ -24,6 +24,16 @@
   font-size: var(--text-xl);
 }
 
+/* aviso de save de versão mais nova (somente leitura), como na Fazendinha */
+.mail__readonly {
+  --fill: #fff3c4;
+  --frame: #a67c1a;
+  width: calc(100% - var(--px) * 2);
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
 /* ---------- Agência do correio ---------- */
 .post-office {
   --fill: #fff4ef;

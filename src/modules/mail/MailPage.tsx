@@ -14,6 +14,7 @@ import { useFocusOnMount } from '../../hooks/useFocusOnMount'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { useRotatingMessage } from '../../hooks/useRotatingMessage'
 import { markOpened, markSeen, recordPoke, useProgress } from '../../lib/progress'
+import { useSaveStatus } from '../../lib/save'
 import { PixelSprite } from '../../pixel/PixelSprite'
 import { POSTBOX } from '../../pixel/sprites/mail'
 import { KingDelivery } from './KingDelivery'
@@ -47,6 +48,8 @@ export default function MailPage() {
   const headingRef = useFocusOnMount<HTMLHeadingElement>()
   const reducedMotion = usePrefersReducedMotion()
   const progress = useProgress()
+  // save de versão mais nova: o álbum mostra o que está gravado e nada muda
+  const readOnly = useSaveStatus() === 'future-version'
   const carrier = useRotatingMessage(CARRIER_LINES, CARRIER_GREETING)
 
   const [filter, setFilter] = useState<Filter>('todas')
@@ -60,6 +63,23 @@ export default function MailPage() {
 
   useEffect(() => () => window.clearTimeout(timer.current), [])
 
+  // Ao fechar uma carta, o foco volta para ela no álbum. Vale também para a
+  // carta final, aberta pela janela do Rei Pombo (que já não existe mais).
+  const lastOpenLetter = useRef<number | null>(null)
+  useEffect(() => {
+    if (openLetterId !== null) {
+      lastOpenLetter.current = openLetterId
+      return
+    }
+    const closed = lastOpenLetter.current
+    lastOpenLetter.current = null
+    if (closed === null) return
+    const card = document.querySelector<HTMLElement>(`[data-letter-id="${closed}"]`)
+    // carta escondida pelo filtro: o foco vai para o título da página
+    ;(card ?? headingRef.current)?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openLetterId])
+
   const unlocked = unlockedIds(progress)
   const unlockedSet = new Set(unlocked)
 
@@ -67,7 +87,7 @@ export default function MailPage() {
   // álbum (e nenhuma janela aberta), o carteiro chega trazendo-as. A carta
   // final fica para o Rei Pombo, depois das outras.
   useEffect(() => {
-    if (openLetterId !== null || kingOpen || delivery) return
+    if (readOnly || openLetterId !== null || kingOpen || delivery) return
     const fresh = newlyUnlocked(progress)
     if (fresh.length === 0) return
 
@@ -92,7 +112,7 @@ export default function MailPage() {
       },
       reducedMotion ? 0 : DELIVERY_MS,
     )
-  }, [progress, openLetterId, kingOpen, delivery, reducedMotion])
+  }, [progress, openLetterId, kingOpen, delivery, reducedMotion, readOnly])
 
   const openLetter = (id: number) => {
     markOpened(id)
@@ -155,6 +175,13 @@ export default function MailPage() {
             {mod.name}
           </h1>
         </header>
+
+        {readOnly && (
+          <p className="mail__readonly px-box" role="note">
+            Este progresso foi salvo por uma versão mais nova do Pru no Sekai. Para não estragar nada, o álbum está só
+            para olhar por aqui.
+          </p>
+        )}
 
         {/* agência do correio: caixa vermelha + pombo-carteiro */}
         <section className="post-office px-box" aria-label="Agência do correio">
@@ -247,7 +274,7 @@ export default function MailPage() {
       {openLetterData && <LetterDialog key={openLetterData.id} letter={openLetterData} onClose={() => setOpenLetterId(null)} />}
       {kingOpen && <KingDelivery onReceive={receiveFromKing} onClose={dismissKing} />}
 
-      <BottomNav current="correio" />
+      <BottomNav current="correio" inert={openLetterData !== null || kingOpen} />
     </div>
   )
 }

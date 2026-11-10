@@ -49,6 +49,8 @@ export default function FarmPage() {
   const [announcement, setAnnouncement] = useState('')
   const [pops, setPops] = useState<{ id: number; plot: number; text: string }[]>([])
   const [helpOpen, setHelpOpen] = useState(false)
+  // fechado nesta visita: com o save somente leitura, "tutorial visto" não é gravado
+  const [tutorialDismissed, setTutorialDismissed] = useState(false)
   const popId = useRef(0)
   const timers = useRef(new Set<number>())
   const readyBefore = useRef<Set<number> | null>(null)
@@ -134,10 +136,11 @@ export default function FarmPage() {
       say(`O Pombo-sama deixou um saquinho de sementes: ${gifts}.`)
     })
 
-  const showTutorial = !economy.tutorialDone || helpOpen
+  const showTutorial = (!economy.tutorialDone && !tutorialDismissed) || helpOpen
   const closeTutorial = () => {
-    const firstVisit = !economy.tutorialDone
+    const firstVisit = !economy.tutorialDone && !tutorialDismissed
     finishTutorial()
+    setTutorialDismissed(true)
     setHelpOpen(false)
     // primeira visita: ninguém abriu o tutorial, então o foco vai para o título
     if (firstVisit) window.setTimeout(() => headingRef.current?.focus(), 0)
@@ -266,7 +269,7 @@ export default function FarmPage() {
       </p>
 
       {showTutorial && <FarmTutorial onClose={closeTutorial} />}
-      <BottomNav current="fazenda" />
+      <BottomNav current="fazenda" inert={showTutorial} />
     </div>
   )
 }

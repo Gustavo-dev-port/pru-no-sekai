@@ -5,7 +5,8 @@ const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabi
 /**
  * Comportamento de janela modal acessível:
  * - leva o foco para `initialFocus` ao abrir;
- * - Tab e Shift+Tab ficam presos dentro da janela;
+ * - Tab e Shift+Tab ficam presos dentro da janela, partindo de qualquer
+ *   ponto (inclusive do título, que recebe foco mas não é parada de Tab);
  * - Esc fecha;
  * - a página de trás não rola;
  * - ao fechar, o foco volta para quem abriu.
@@ -32,19 +33,26 @@ export function useModal(
         return
       }
       if (e.key !== 'Tab' || !containerRef.current) return
+      // O foco é sempre movido aqui, nunca pelo navegador: assim ele não
+      // tem como sair da janela.
+      e.preventDefault()
       const items = [...containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)]
       if (items.length === 0) return
-      const first = items[0]
-      const last = items[items.length - 1]
       const active = document.activeElement
-      const inside = containerRef.current.contains(active)
-      if (e.shiftKey && (active === first || !inside)) {
-        e.preventDefault()
-        last.focus()
-      } else if (!e.shiftKey && (active === last || !inside)) {
-        e.preventDefault()
-        first.focus()
+      const index = items.indexOf(active as HTMLElement)
+      let target: HTMLElement
+      if (index !== -1) {
+        target = items[(index + (e.shiftKey ? -1 : 1) + items.length) % items.length]
+      } else {
+        // foco fora das paradas de Tab (título da janela, fundo da página):
+        // vai para a parada seguinte/anterior na ordem do documento
+        const isAfter = (el: HTMLElement) => !!active && !!(active.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)
+        const inside = containerRef.current.contains(active)
+        const next = inside ? items.find(isAfter) : undefined
+        const previous = inside ? items.filter((el) => !isAfter(el)).pop() : undefined
+        target = e.shiftKey ? (previous ?? items[items.length - 1]) : (next ?? items[0])
       }
+      target.focus()
     }
     document.addEventListener('keydown', onKeyDown)
 

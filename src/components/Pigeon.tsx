@@ -132,8 +132,13 @@ export function Pigeon({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // só reage a uma cutucada NOVA: remontar o pombo (ex.: o carteiro no início
+  // e no fim de uma entrega) com cutucadas antigas não faz ele pular
+  const lastPoke = useRef(pokeCount)
   useEffect(() => {
-    if (pokeCount === 0 || reducedMotion) return
+    if (pokeCount === lastPoke.current) return
+    lastPoke.current = pokeCount
+    if (reducedMotion) return
     startFlap()
     setHopping(true)
     const id = window.setTimeout(() => setHopping(false), 660)

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { getModule, type ModuleId } from './data/modules'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { Pigeon } from './components/Pigeon'
 import { recordVisit } from './lib/progress'
 import { useRoute } from './router'
@@ -47,9 +48,12 @@ export default function App() {
   }, [route])
 
   return (
-    <Suspense fallback={<Loading />}>
-      {/* key: cada rota monta do zero (foco, animações de entrada) */}
-      <div key={route}>{renderRoute(route)}</div>
-    </Suspense>
+    // key: cada rota monta do zero (foco, animações de entrada) e, depois de
+    // uma falha, trocar de módulo tira a tela de erro
+    <ErrorBoundary key={route}>
+      <Suspense fallback={<Loading />}>
+        <div>{renderRoute(route)}</div>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

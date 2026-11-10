@@ -51,6 +51,7 @@ export function LetterCard({ letter, state, isNew, hint, onOpen }: LetterCardPro
       type="button"
       className={`letter-card letter-card--${state} letter-card--${letter.rarity} px-box ${isNew ? 'letter-card--new' : ''}`}
       onClick={() => onOpen(letter.id)}
+      data-letter-id={letter.id}
       aria-label={`${action}: carta "${letter.title}" (${rarity.toLowerCase()})${isNew ? ', nova' : ''}`}
     >
       {isNew && (

@@ -37,6 +37,23 @@ import { initialEconomy, recoverEconomy, type EconomyState } from '../economy/fa
        e grava pelo mesmo lock; sem lock, grava direto (melhor esforço,
        documentado como sem garantia).
      • Evento "storage": quando outra aba grava, esta relê e atualiza a tela.
+
+   AO ABRIR O SITE (AUD-007.1-02)
+     • A loja LÊ o armazenamento na hora (a tela já mostra o progresso),
+       mas a gravação de criação, migração ou recuperação acontece DENTRO
+       do mesmo Web Lock, relendo antes: se outra aba já gravou, vale o que
+       ela gravou e nada é sobrescrito.
+     • Sem Web Locks: grava direto ao abrir (melhor esforço, sem garantia).
+     • Se a gravação falhar, o progresso segue em memória e a próxima
+       gravação protegida tenta de novo.
+     • Cópia de segurança: uma por texto original. Texto já copiado não é
+       copiado de novo, e uma cópia nunca substitui outra diferente.
+
+   SAVE INCOMPATÍVEL (AUD-007.1-01)
+     • Em modo somente leitura NADA muda, nem em memória: a tela mostra só
+       o que está gravado.
+     • Se o save fica incompatível com alterações do Correio ainda na fila,
+       elas são descartadas e a tela volta ao que está gravado.
    ========================================================================= */
 
 export const SAVE_KEY = 'pru:save'
@@ -202,11 +219,24 @@ export function createSaveStore(env: SaveStoreEnv) {
     return interpretSave(env.storage.getItem(SAVE_KEY), env.storage.getItem(LEGACY_MAIL_KEY), env.now())
   }
 
+  /** Guarda o texto original, a menos que já exista uma cópia idêntica. */
+  const backUp = (storage: Storage, text: string) => {
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i)
+      if (key?.startsWith(BACKUP_KEY_PREFIX) && storage.getItem(key) === text) return
+    }
+    // nunca substitui uma cópia diferente feita no mesmo instante
+    const base = `${BACKUP_KEY_PREFIX}${env.now()}`
+    let key = base
+    for (let n = 2; storage.getItem(key) !== null; n++) key = `${base}-${n}`
+    storage.setItem(key, text)
+  }
+
   /** Grava (com cópia de segurança antes, se for recuperação). false = falhou. */
   const persist = (result: LoadResult, data: SaveData): boolean => {
     if (!env.storage || !result.writable) return false
     try {
-      if (result.backup !== null) env.storage.setItem(`${BACKUP_KEY_PREFIX}${env.now()}`, result.backup)
+      if (result.backup !== null) backUp(env.storage, result.backup)
       env.storage.setItem(SAVE_KEY, JSON.stringify(data))
       return true
     } catch {
@@ -214,16 +244,44 @@ export function createSaveStore(env: SaveStoreEnv) {
     }
   }
 
+  // Ao abrir: só lê. A gravação (criação, migração, recuperação) fica para
+  // settle(), dentro do lock.
   let loaded: LoadResult = (() => {
     try {
-      const result = read()
-      if (result.needsWrite && persist(result, result.data)) return { ...result, backup: null, needsWrite: false }
-      return result
+      return read()
     } catch {
       return { ...interpretSave(null, null, env.now()), status: 'storage-unavailable' as const, needsWrite: false }
     }
   })()
   let state: SaveData = loaded.data
+
+  /** Alterações do Correio já mostradas na tela, mas ainda na fila para gravar. */
+  const optimistic: { change: (current: SaveData) => SaveData }[] = []
+  const rebase = (data: SaveData) => optimistic.reduce((acc, entry) => entry.change(acc), data)
+  const drop = (entry: (typeof optimistic)[number]) => {
+    const index = optimistic.indexOf(entry)
+    if (index !== -1) optimistic.splice(index, 1)
+  }
+
+  /** Passa a valer o que foi lido do armazenamento. Save incompatível: o que estava na fila é descartado. */
+  const adopt = (fresh: LoadResult) => {
+    loaded = fresh
+    if (!fresh.writable) optimistic.length = 0
+    state = rebase(fresh.data)
+    notify()
+  }
+
+  /** A gravação pendente (criação, migração, recuperação) foi feita. */
+  const markPersisted = () => {
+    if (loaded.needsWrite) loaded = { ...loaded, backup: null, needsWrite: false }
+  }
+
+  /** Criação, migração e recuperação: relê e só então grava. Roda dentro do lock. */
+  const settle = () => {
+    const fresh = read()
+    if (fresh.writable && fresh.needsWrite && persist(fresh, fresh.data)) adopt({ ...fresh, backup: null, needsWrite: false })
+    else adopt(fresh)
+  }
 
   /** Executa `work` com exclusividade entre abas. */
   async function exclusive<T>(work: () => T): Promise<TransactionResult<T>> {
@@ -266,39 +324,60 @@ export function createSaveStore(env: SaveStoreEnv) {
     const run = exclusive(() => {
       const fresh = read() // relê DENTRO do lock: o que outra aba gravou conta
       if (!fresh.writable) {
-        loaded = fresh
-        state = fresh.data
-        notify()
+        adopt(fresh)
         throw new SaveAbort('save-incompativel')
       }
       const { next, value } = change(fresh.data)
       const target = next ?? fresh.data
       if (next || fresh.needsWrite) {
         if (!persist(fresh, target)) throw new SaveAbort('falha-ao-salvar')
+        markPersisted()
       }
-      state = target
+      state = rebase(target)
       notify()
       return value
     })
-    pending = run.catch(() => undefined)
+    pending = Promise.all([pending, run.catch(() => undefined)])
     return run
   }
 
   /**
    * Alteração de melhor esforço (Correio): aparece na hora e é gravada
-   * pelo lock (ou direto, sem lock). Nunca derruba a tela.
+   * pelo lock (ou direto, sem lock). Nunca derruba a tela. Com o save
+   * incompatível, não faz nada.
    */
   function updateSave(change: (current: SaveData) => SaveData): Promise<void> {
+    if (!loaded.writable) return Promise.resolve()
+    if (!env.storage) {
+      state = change(state)
+      notify()
+      return Promise.resolve()
+    }
+
+    const entry = { change }
+    optimistic.push(entry)
     state = change(state)
     notify()
-    if (!loaded.writable || !env.storage) return Promise.resolve()
 
     const writeFresh = () => {
-      const fresh = read()
-      if (!fresh.writable) return
-      const next = change(fresh.data)
-      if (persist(fresh, next)) state = next
-      notify()
+      // descartada: o save ficou incompatível enquanto esta esperava na fila
+      if (!optimistic.includes(entry)) return
+      try {
+        const fresh = read()
+        if (!fresh.writable) {
+          adopt(fresh)
+          return
+        }
+        const next = change(fresh.data)
+        drop(entry)
+        if (persist(fresh, next)) {
+          markPersisted()
+          state = rebase(next)
+        }
+        notify()
+      } finally {
+        drop(entry)
+      }
     }
 
     if (!env.locks) {
@@ -309,7 +388,13 @@ export function createSaveStore(env: SaveStoreEnv) {
       }
       return Promise.resolve()
     }
-    const run = exclusive(writeFresh).then(() => undefined, () => undefined)
+    // lock ocupado ou erro: a alteração fica só em memória, fora da fila
+    const run = exclusive(writeFresh).then(
+      (result) => {
+        if (!result.ok) drop(entry)
+      },
+      () => drop(entry),
+    )
     pending = Promise.all([pending, run])
     return run
   }
@@ -317,12 +402,25 @@ export function createSaveStore(env: SaveStoreEnv) {
   /** Outra aba gravou: atualiza esta. */
   function handleExternalChange() {
     try {
-      const fresh = read()
-      loaded = fresh
-      state = fresh.data
-      notify()
+      adopt(read())
     } catch {
       /* mantém o que está em memória */
+    }
+  }
+
+  // Abrir o site: a gravação inicial também passa pelo lock.
+  if (env.storage && loaded.needsWrite) {
+    if (env.locks) {
+      pending = exclusive(settle).then(
+        () => undefined,
+        () => undefined,
+      )
+    } else {
+      try {
+        settle() // sem Web Locks: melhor esforço
+      } catch {
+        /* segue em memória */
+      }
     }
   }
 
